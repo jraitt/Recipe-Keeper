@@ -16,13 +16,13 @@
 - [x] Install Docker Desktop
 - [ ] Install PostgreSQL client tools
 - [x] Configure VS Code with recommended extensions
-- [ ] Set up ESLint and Prettier configurations
+- [x] Set up ESLint and Prettier configurations
 
 #### Initial Documentation
-- [ ] Create API.md documentation template
-- [ ] Create CONTRIBUTING.md with coding standards
-- [ ] Set up CHANGELOG.md
-- [ ] Create architecture decision records (ADR) folder
+- [x] Create API.md documentation template
+- [x] Create CONTRIBUTING.md with coding standards
+- [x] Set up CHANGELOG.md
+- [x] Create architecture decision records (ADR) folder
 
 ---
 
