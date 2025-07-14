@@ -5,11 +5,11 @@
 ### 📋 Milestone 0: Project Setup & Planning (Week 1)
 
 #### Environment Setup
-- [ ] Initialize Git repository with proper .gitignore
-- [ ] Create project folder structure as defined in PLANNING.md
-- [ ] Set up development branch and Git flow
-- [ ] Create README.md with project overview
-- [ ] Set up .env.example files for frontend and backend
+- [x] Initialize Git repository with proper .gitignore
+- [x] Create project folder structure as defined in PLANNING.md
+- [x] Set up development branch and Git flow
+- [x] Create README.md with project overview
+- [x] Set up .env.example files for frontend and backend
 
 #### Development Environment
 - [ ] Install Node.js 20 LTS
