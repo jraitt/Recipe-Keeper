@@ -12,10 +12,10 @@
 - [x] Set up .env.example files for frontend and backend
 
 #### Development Environment
-- [ ] Install Node.js 20 LTS
-- [ ] Install Docker Desktop
+- [x] Install Node.js 20 LTS
+- [x] Install Docker Desktop
 - [ ] Install PostgreSQL client tools
-- [ ] Configure VS Code with recommended extensions
+- [x] Configure VS Code with recommended extensions
 - [ ] Set up ESLint and Prettier configurations
 
 #### Initial Documentation
