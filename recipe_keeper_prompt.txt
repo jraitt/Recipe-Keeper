@@ -1,0 +1,19 @@
+Help me create a PRD for a web app that allows users to store their favorite recipes.I want a clean, modern beautiful app.
+Each recipe should have:
+- Title
+- Rating
+- Photo of the item
+- Preparation summary box: times, servings etc.
+- Ingrediants list
+- Directions
+- Nutrition Facts
+
+The user should be able to easily create, update, delete items
+
+The user can add items by: 
+- Uploading a photo (use AI to take the details from the photo and populate recipe items, create a picture if needed)
+- Provide a URL from an existing recipe and use AI to extract and create the recipe items in the database.
+
+
+I want to run the web app in a docker container
+Use Gemini 2.5 Flash for AI 
