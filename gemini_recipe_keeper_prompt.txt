@@ -1,0 +1,26 @@
+Create a web app that allows users to store their favorite recipes. I want a clean, modern beautiful app.
+This should be a Docker first design, all development done in a docker container
+
+Each recipe should have:
+- Title
+- Rating
+- Photo of the item
+- Preparation summary box: times, servings etc.
+- Ingrediants list
+- Directions
+- Nutrition Facts
+
+The user should be able to easily create, update, delete items
+
+The user can add items by: 
+- Uploading a photo (use AI to take the details from the photo and populate recipe items, create a picture if needed)
+- Provide a URL from an existing recipe and use AI to extract and create the recipe items in the database.
+
+Use Gemini 2.5 Flash for AI 
+create complete documentation for the project
+create a test environment and robust tests for each module 
+
+Do not write an code yet, think through the architecture and create these documents:
+GEMINI.md - use as for your referance for project structure rules and curreent progresss. Review / update at least before/after each session
+PLANNING.md - 
+TASKS.md - all the tasks for the project, review / update after each task completion
