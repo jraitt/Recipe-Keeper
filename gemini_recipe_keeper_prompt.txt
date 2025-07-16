@@ -1,3 +1,4 @@
+
 Create a web app that allows users to store their favorite recipes. I want a clean, modern beautiful app.
 This should be a Docker first design, all development done in a docker container
 
