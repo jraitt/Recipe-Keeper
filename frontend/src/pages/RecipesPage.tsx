@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Camera, Link as LinkIcon } from 'lucide-react';
+import { Plus, Upload } from 'lucide-react';
 import { useRecipeStore } from '../store/recipeStore';
 import { useAuthStore } from '../store/authStore';
 import { RecipeGrid } from '../components/recipe/RecipeGrid';
@@ -68,11 +68,7 @@ export const RecipesPage = () => {
     navigate('/recipes/new');
   };
 
-  const handleImportFromPhoto = () => {
-    setShowImportModal(true);
-  };
-
-  const handleImportFromURL = () => {
+  const handleShowImportModal = () => {
     setShowImportModal(true);
   };
 
@@ -129,18 +125,11 @@ export const RecipesPage = () => {
             Add Recipe
           </button>
           <button
-            onClick={handleImportFromPhoto}
+            onClick={handleShowImportModal}
             className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
           >
-            <Camera className="w-4 h-4" />
-            Import from Photo
-          </button>
-          <button
-            onClick={handleImportFromURL}
-            className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors"
-          >
-            <LinkIcon className="w-4 h-4" />
-            Import from URL
+            <Upload className="w-4 h-4" />
+            Import from Photo or URL
           </button>
         </div>
       </div>

@@ -46,7 +46,7 @@ export const aiService = {
    */
   async importFromPhoto(file: File): Promise<ImportedRecipe> {
     const formData = new FormData();
-    formData.append('photo', file);
+    formData.append('image', file);
 
     const response = await api.post<AIResponse>('/ai/import/photo', formData, {
       headers: {

@@ -42,9 +42,9 @@ const PhotoImport: React.FC<PhotoImportProps> = ({ onImport, onCancel, loading =
       return;
     }
 
-    // Validate file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      setError('Image file must be smaller than 10MB');
+    // Validate file size (max 15MB)
+    if (file.size > 15 * 1024 * 1024) {
+      setError('Image file must be smaller than 15MB');
       return;
     }
 
@@ -129,7 +129,7 @@ const PhotoImport: React.FC<PhotoImportProps> = ({ onImport, onCancel, loading =
               </label>
             </div>
             <p className="text-xs text-gray-500">
-              Supports JPG, PNG, WEBP up to 10MB
+              Supports JPG, PNG, WEBP up to 15MB
             </p>
           </div>
         </div>

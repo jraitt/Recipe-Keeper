@@ -27,49 +27,11 @@ git pull origin main
 
 ### 2. 🌐 Configure DNS
 
-At your domain registrar (e.g., Ionos), create a new **A Record**:
-
-| Field | Value |
-|-------|-------|
-| **Type** | A Record |
-| **Name** | `recipes` |
-| **Value** | Your server's IP address |
-| **TTL** | 300 (or default) |
+At your domain registrar (e.g., Ionos), create a new subdomain:
 
 **Result:** `recipes.compound-interests.com` → Your Server IP
 
-### 3. ⚙️ Configure Environment Variables
-
-Create and configure the environment file:
-
-```bash
-# Copy the example file
-cp .env.example .env
-
-# Edit with your settings
-nano .env
-```
-
-**Required environment variables:**
-```env
-# Gemini AI API Key (required for recipe import)
-GEMINI_API_KEY=your_actual_api_key_here
-
-# Application Environment
-NODE_ENV=production
-
-# Database Configuration
-DATABASE_URL=postgresql://postgres:postgres@db:5432/recipes
-
-# JWT Secret (generate a secure random string)
-JWT_SECRET=your-secure-jwt-secret-key-here
-
-# Optional: Set custom ports if needed
-# PORT=3021
-# FRONTEND_PORT=3020
-```
-
-### 4. 🔧 Configure Nginx Reverse Proxy
+### 3. 🔧 Configure Nginx Reverse Proxy
 
 Create the Nginx configuration file:
 
@@ -135,7 +97,7 @@ server {
 }
 ```
 
-### 5. 🔐 Enable Site and Configure SSL
+### 4. 🔐 Enable Site and Configure SSL
 
 **Enable the site:**
 ```bash
@@ -159,7 +121,7 @@ sudo certbot --nginx -d recipes.compound-interests.com
 
 > 📝 **Note:** Certbot will automatically modify your Nginx configuration to handle HTTPS and HTTP-to-HTTPS redirection.
 
-### 6. 🐳 Deploy with Docker
+### 5. 🐳 Deploy with Docker
 
 **Build and start the containers:**
 ```bash
@@ -179,7 +141,7 @@ docker compose logs -f frontend
 docker compose logs -f backend
 ```
 
-### 7. ✅ Verify Deployment
+### 6. ✅ Verify Deployment
 
 **Check that all services are running:**
 ```bash

@@ -12,18 +12,15 @@ interface ImportModalProps {
   onImport: (recipe: Recipe) => Promise<void>;
 }
 
-type ImportMethod = 'select' | 'photo' | 'url';
 type ImportStep = 'method' | 'importing' | 'preview' | 'success';
 
 const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImport }) => {
-  const [importMethod, setImportMethod] = useState<ImportMethod>('select');
   const [importStep, setImportStep] = useState<ImportStep>('method');
   const [loading, setLoading] = useState(false);
   const [importedRecipe, setImportedRecipe] = useState<Recipe | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleReset = () => {
-    setImportMethod('select');
     setImportStep('method');
     setLoading(false);
     setImportedRecipe(null);
@@ -117,32 +114,36 @@ const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImport }) 
             <div className="space-y-6">
               <div className="text-center">
                 <p className="text-gray-600 mb-6">
-                  Choose how you'd like to import your recipe
+                  Import your recipe from a photo or URL
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button
-                  onClick={() => setImportMethod('photo')}
-                  className="flex flex-col items-center p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors"
-                >
-                  <Camera className="w-12 h-12 text-gray-400 mb-3" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">From Photo</h3>
-                  <p className="text-sm text-gray-500 text-center">
-                    Upload a photo of your recipe and let AI extract the details
-                  </p>
-                </button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Photo Import */}
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <Camera className="w-5 h-5 text-blue-600" />
+                    <h3 className="text-lg font-medium text-gray-900">From Photo</h3>
+                  </div>
+                  <PhotoImport
+                    onImport={handlePhotoImport}
+                    onCancel={() => {}}
+                    loading={loading}
+                  />
+                </div>
 
-                <button
-                  onClick={() => setImportMethod('url')}
-                  className="flex flex-col items-center p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors"
-                >
-                  <Link className="w-12 h-12 text-gray-400 mb-3" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">From URL</h3>
-                  <p className="text-sm text-gray-500 text-center">
-                    Enter a recipe URL and let AI extract the information
-                  </p>
-                </button>
+                {/* URL Import */}
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <Link className="w-5 h-5 text-blue-600" />
+                    <h3 className="text-lg font-medium text-gray-900">From URL</h3>
+                  </div>
+                  <UrlImport
+                    onImport={handleUrlImport}
+                    onCancel={() => {}}
+                    loading={loading}
+                  />
+                </div>
               </div>
 
               {error && (
@@ -187,26 +188,6 @@ const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImport }) 
           )}
         </div>
 
-        {/* Method Selection */}
-        {importMethod === 'photo' && importStep === 'method' && (
-          <div className="p-6 border-t">
-            <PhotoImport
-              onImport={handlePhotoImport}
-              onCancel={() => setImportMethod('select')}
-              loading={loading}
-            />
-          </div>
-        )}
-
-        {importMethod === 'url' && importStep === 'method' && (
-          <div className="p-6 border-t">
-            <UrlImport
-              onImport={handleUrlImport}
-              onCancel={() => setImportMethod('select')}
-              loading={loading}
-            />
-          </div>
-        )}
       </div>
     </div>
   );
