@@ -6,15 +6,15 @@ services:
     image: postgres:15-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: recipes
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -23,40 +23,39 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.prod
     restart: unless-stopped
     ports:
       - "3021:3021"
     volumes:
-      - ./backend:/app
-      - /app/node_modules
       - uploads:/app/uploads
     environment:
-      - NODE_ENV=development
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/recipes
-      - JWT_SECRET=your-dev-jwt-secret-key
+      - NODE_ENV=${NODE_ENV}
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - PORT=3021
+      - PORT=${PORT}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - FORCE_HTTPS=${FORCE_HTTPS}
+      - LOG_LEVEL=${LOG_LEVEL}
     depends_on:
       db:
         condition: service_healthy
-    command: npm run dev
 
-  # Frontend Development Server
+  # Frontend Static Files
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.prod
+      args:
+        - VITE_API_URL=${CORS_ORIGIN}/api
     restart: unless-stopped
     ports:
-      - "3020:3020"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - "3020:80"
     environment:
-      - NODE_ENV=development
-      - VITE_API_URL=https://recipes.compound-interests.com/api
-      - VITE_HMR_DISABLED=true
+      - NODE_ENV=production
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:
