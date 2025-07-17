@@ -54,8 +54,8 @@ services:
       - ./frontend:/app
       - /app/node_modules
     environment:
-      - NODE_ENV=development
-      - VITE_API_URL=http://localhost:3021/api
+      - NODE_ENV=production
+      - VITE_API_URL=https://recipes.compound-interests.com/api
     command: npm run dev
 
 volumes:

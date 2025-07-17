@@ -57,96 +57,33 @@ Build a containerized web application that:
 └────────────────────────┘  └─────────────────────────────────┘
 ```
 
-### Container Architecture
+### Application Architecture
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                 Docker Host System                  │
-├─────────────────────────────────────────────────────┤
-│  ┌─────────────────┐  ┌─────────────────┐           │
-│  │   Web Container │  │  DB Container   │           │
-│  │   - Node.js     │  │  - PostgreSQL   │           │
-│  │   - React App   │  │  - Persistent   │           │
-│  │   - API Server  │  │    Storage      │           │
-│  └────────┬────────┘  └────────▲────────┘           │
-│           │                     │                   │
-│           └─────────────────────┘                   │
-│                Docker Network                       │
-└─────────────────────────────────────────────────────┘
-```
-
-### Data Flow Architecture
-
-```
-User Action → Frontend → API → Business Logic → Database
-                  ↓                    ↓
-              Validation          AI Service
-                                 (Gemini API)
+User → Frontend (React) → API (Express) → Database (PostgreSQL)
+                   ↓              ↓
+               Validation    AI Service (Gemini)
 ```
 
 ## 💻 Technology Stack
 
-### Frontend Technologies
+### Frontend
+- **Framework**: React.js with TypeScript
+- **UI Library**: Tailwind CSS with Shadcn/ui
+- **State Management**: Zustand
+- **Build Tool**: Vite
 
-| Category | Technology | Version | Purpose |
-|----------|------------|---------|---------|
-| Framework | React | 18.x | Component-based UI framework |
-| Language | TypeScript | 5.x | Type safety and better DX |
-| Styling | Tailwind CSS | 3.x | Utility-first CSS framework |
-| State Management | Zustand | 4.x | Lightweight state management |
-| Routing | React Router | 6.x | Client-side routing |
-| HTTP Client | Axios | 1.x | API communication |
-| UI Components | Shadcn/ui | Latest | Modern component library |
-| Build Tool | Vite | 5.x | Fast build tool and dev server |
-| Image Handling | react-dropzone | 14.x | Drag-and-drop file uploads |
-| Form Handling | React Hook Form | 7.x | Performant form library |
-| Validation | Zod | 3.x | Schema validation |
+### Backend
+- **Framework**: Node.js with Express
+- **Database**: PostgreSQL with Prisma ORM
+- **File Storage**: Local volume mount with Sharp image processing
+- **AI Service**: Google Gemini 2.5 Flash API
+- **API Design**: RESTful
 
-### Backend Technologies
-
-| Category | Technology | Version | Purpose |
-|----------|------------|---------|---------|
-| Runtime | Node.js | 20 LTS | JavaScript runtime |
-| Framework | Express | 4.x | Web application framework |
-| Language | TypeScript | 5.x | Type safety |
-| Database | PostgreSQL | 15.x | Primary data storage |
-| ORM | Prisma | 5.x | Database toolkit |
-| Authentication | jsonwebtoken | 9.x | JWT implementation |
-| Validation | Joi | 17.x | Request validation |
-| File Upload | Multer | 1.x | Multipart form data |
-| AI Integration | @google/generative-ai | Latest | Gemini API client |
-| Web Scraping | Puppeteer | 21.x | URL recipe extraction |
-| Image Processing | Sharp | 0.33.x | Image optimization |
-| CORS | cors | 2.x | Cross-origin requests |
-| Security | Helmet | 7.x | Security headers |
-| Logging | Winston | 3.x | Application logging |
-| Rate Limiting | express-rate-limit | 7.x | API rate limiting |
-
-### DevOps & Infrastructure
-
-| Category | Technology | Purpose |
-|----------|------------|---------|
-| Containerization | Docker | Application containers |
-| Orchestration | Docker Compose | Multi-container apps |
-| Process Manager | PM2 | Node.js process management |
-| Reverse Proxy | Nginx (optional) | Load balancing, SSL |
-| Monitoring | Prometheus + Grafana | System monitoring |
-| CI/CD | GitHub Actions | Automated deployment |
-| Environment Management | dotenv | Environment variables |
-
-### Development Tools
-
-| Category | Tool | Purpose |
-|----------|------|---------|
-| Code Editor | VS Code | Primary IDE |
-| API Testing | Postman/Insomnia | API development |
-| Database GUI | pgAdmin/TablePlus | Database management |
-| Version Control | Git | Source control |
-| Package Manager | npm/pnpm | Dependency management |
-| Linting | ESLint | Code quality |
-| Formatting | Prettier | Code formatting |
-| Testing | Jest + React Testing Library | Unit/integration tests |
-| E2E Testing | Playwright | End-to-end testing |
+### Infrastructure
+- **Containerization**: Docker & Docker Compose
+- **Development Tools**: VS Code, ESLint, Prettier
+- **Testing**: Jest + React Testing Library
 
 ## 🛠️ Required Tools & Services
 
@@ -216,15 +153,13 @@ User Action → Frontend → API → Business Logic → Database
    ```bash
    # .env file
    GEMINI_API_KEY=your_api_key_here
-   GEMINI_MODEL=gemini-2.0-flash-exp
+   GEMINI_MODEL=gemini-2.5-flash
    ```
 
 #### Optional Services (Future Enhancements)
-- **AWS S3 / Cloudflare R2**: Object storage for images
-- **SendGrid / Resend**: Email notifications
-- **Sentry**: Error tracking
-- **Vercel / Railway**: Deployment platforms
-- **Cloudflare**: CDN and DDoS protection
+- **Image CDN**: Cloudflare R2 or AWS S3 for scalable image storage
+- **Error Tracking**: Sentry for production monitoring
+- **Deployment**: Vercel or Railway for easy deployment
 
 ### System Requirements
 
@@ -363,47 +298,21 @@ services:
 
 ## 📅 Development Timeline
 
-### Phase 1: Foundation (Weeks 1-3)
-- [ ] Project setup and configuration
-- [ ] Database schema design
-- [ ] Basic Docker configuration
-- [ ] Authentication system
-- [ ] Core API endpoints
+### Remaining Development Goals
 
-### Phase 2: Core Features (Weeks 4-6)
-- [ ] Recipe CRUD operations
-- [ ] File upload system
-- [ ] Basic UI implementation
-- [ ] Search functionality
-- [ ] Responsive design
-
-### Phase 3: AI Integration (Weeks 7-9)
-- [ ] Gemini API integration
-- [ ] Photo analysis feature
-- [ ] URL extraction feature
-- [ ] AI response caching
-- [ ] Error handling
-
-### Phase 4: Polish & Optimization (Weeks 10-12)
-- [ ] Performance optimization
-- [ ] Advanced search filters
-- [ ] UI/UX improvements
-- [ ] Testing suite
-- [ ] Documentation
-
-### Phase 5: Deployment (Weeks 13-14)
-- [ ] Production setup
+#### Next Phase: Testing & Optimization
+- [ ] Performance optimization (caching, bundling)
+- [ ] Comprehensive testing suite
+- [ ] Production deployment setup
 - [ ] CI/CD pipeline
-- [ ] Monitoring setup
 - [ ] Security audit
-- [ ] Launch preparation
 
-### Phase 6: Post-Launch (Weeks 15-16)
-- [ ] Bug fixes
-- [ ] Performance monitoring
+#### Future Enhancements
+- [ ] Advanced search filters
 - [ ] User feedback integration
-- [ ] Feature prioritization
-- [ ] Scaling planning
+- [ ] Mobile app development
+- [ ] Recipe sharing features
+- [ ] Nutrition tracking
 
 ## 🔧 Development Workflow
 
