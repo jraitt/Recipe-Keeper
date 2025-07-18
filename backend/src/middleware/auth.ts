@@ -21,10 +21,12 @@ export const authenticateToken = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    console.log('DEBUG: authenticateToken called for', req.method, req.url);
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
     if (!token) {
+      console.log('DEBUG: No token provided');
       res.status(401).json({
         success: false,
         error: { message: 'Access token required' }

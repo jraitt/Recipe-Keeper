@@ -1,6 +1,6 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { authenticateToken } from '../middleware/auth';
-import { uploadSingle } from '../middleware/upload';
+import { uploadSingle, uploadMultiple } from '../middleware/upload';
 import { geminiService } from '../services/geminiService';
 import { logger } from '../utils/logger';
 import fs from 'fs';
@@ -10,8 +10,31 @@ import { JSDOM } from 'jsdom';
 
 const router = Router();
 
+console.log('DEBUG: aiImport router created');
+
+// Test route to verify aiImport module is working
+router.get('/test', (_req: Request, res: Response) => {
+  logger.info('DEBUG: Test route hit');
+  res.json({ success: true, message: 'AI Import module is working' });
+});
+
+// Debug route to test frontend connectivity
+router.post('/debug', (req: Request, res: Response) => {
+  console.log('DEBUG: /debug route hit');
+  console.log('DEBUG: Headers:', req.headers);
+  console.log('DEBUG: Body:', req.body);
+  res.json({ 
+    success: true, 
+    message: 'Debug route hit successfully',
+    headers: req.headers,
+    body: req.body,
+    url: req.url,
+    method: req.method
+  });
+});
+
 // Image preprocessing middleware
-const preprocessImage = async (req: Request, res: Response, next: any): Promise<void> => {
+const preprocessImage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     if (!req.file) {
       res.status(400).json({
@@ -56,6 +79,89 @@ const preprocessImage = async (req: Request, res: Response, next: any): Promise<
       success: false,
       error: 'Failed to process image'
     });
+    return;
+  }
+};
+
+// Multi-image preprocessing middleware
+const preprocessMultipleImages = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    console.log('DEBUG: preprocessMultipleImages called');
+    console.log('DEBUG: req.files:', req.files);
+    console.log('DEBUG: req.files type:', typeof req.files);
+    console.log('DEBUG: req.files length:', req.files ? (req.files as any).length : 'undefined');
+    
+    if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
+      console.log('DEBUG: No files provided, returning 400');
+      res.status(400).json({
+        success: false,
+        error: 'No image files provided'
+      });
+      return;
+    }
+
+    const imageBuffers: Buffer[] = [];
+    const tempFiles: string[] = [];
+
+    for (const file of req.files) {
+      const inputPath = file.path;
+      const outputPath = inputPath.replace(/\.[^/.]+$/, '-processed.jpg');
+      tempFiles.push(inputPath, outputPath);
+
+      // Process image for AI analysis
+      await sharp(inputPath)
+        .resize(1024, 1024, { 
+          fit: 'inside',
+          withoutEnlargement: true
+        })
+        .jpeg({ quality: 85 })
+        .toFile(outputPath);
+
+      // Read processed image as buffer
+      const imageBuffer = fs.readFileSync(outputPath);
+      imageBuffers.push(imageBuffer);
+    }
+
+    // Attach buffers to request
+    req.imageBuffers = imageBuffers;
+
+    // Clean up files
+    tempFiles.forEach(file => {
+      if (fs.existsSync(file)) {
+        fs.unlinkSync(file);
+      }
+    });
+
+    next();
+  } catch (error) {
+    logger.error('Multi-image preprocessing failed:', error);
+    
+    // Clean up files on error
+    if (req.files && Array.isArray(req.files)) {
+      req.files.forEach(file => {
+        if (file.path && fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
+      });
+    }
+    
+    // Provide better error messages for common issues
+    let errorMessage = 'Failed to process images';
+    if (error instanceof Error) {
+      if (error.message.includes('unsupported image format')) {
+        errorMessage = 'Please upload valid image files (JPG, PNG, WEBP)';
+      } else if (error.message.includes('Input file is missing')) {
+        errorMessage = 'No image files received';
+      } else if (error.message.includes('too large')) {
+        errorMessage = 'Image files are too large (max 15MB each)';
+      }
+    }
+    
+    res.status(400).json({
+      success: false,
+      error: errorMessage
+    });
+    return;
   }
 };
 
@@ -117,6 +223,71 @@ router.post('/photo', authenticateToken, uploadSingle, preprocessImage, async (r
     return res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Photo analysis failed',
+      rateLimitStatus: geminiService.getRateLimitStatus(req.user?.id || 'unknown')
+    });
+  }
+});
+
+// Import recipe from multiple photos
+router.post('/photos', authenticateToken, uploadMultiple, preprocessMultipleImages, async (req: Request, res: Response) => {
+  try {
+    console.log('DEBUG: /photos route handler called');
+    logger.info('DEBUG: Starting multi-photo import handler');
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: 'User authentication required'
+      });
+    }
+
+    const imageBuffers = req.imageBuffers;
+    if (!imageBuffers || imageBuffers.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Image processing failed'
+      });
+    }
+
+    logger.info(`Processing multi-photo import for user ${userId} with ${imageBuffers.length} images`);
+
+    // Check rate limits
+    const rateLimitStatus = geminiService.getRateLimitStatus(userId);
+    if (rateLimitStatus.minuteRemaining <= 0 || rateLimitStatus.dayRemaining <= 0) {
+      return res.status(429).json({
+        success: false,
+        error: 'Rate limit exceeded. Please try again later.',
+        rateLimitStatus
+      });
+    }
+
+    // Analyze photos with Gemini
+    const analysisResult = await geminiService.analyzeRecipeFromMultiplePhotos(imageBuffers, userId);
+
+    // Check confidence level
+    if (analysisResult.confidence < 50) {
+      return res.status(400).json({
+        success: false,
+        error: 'Could not reliably identify a recipe in these images',
+        confidence: analysisResult.confidence,
+        rateLimitStatus: geminiService.getRateLimitStatus(userId)
+      });
+    }
+
+    logger.info(`Multi-photo analysis completed for user ${userId} with confidence ${analysisResult.confidence}%`);
+
+    return res.json({
+      success: true,
+      data: analysisResult,
+      rateLimitStatus: geminiService.getRateLimitStatus(userId)
+    });
+
+  } catch (error) {
+    logger.error('Multi-photo import failed:', error);
+    
+    return res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Multi-photo analysis failed',
       rateLimitStatus: geminiService.getRateLimitStatus(req.user?.id || 'unknown')
     });
   }
@@ -325,11 +496,12 @@ Content: ${bodyText}
   }
 }
 
-// Extend Request interface to include imageBuffer
+// Extend Request interface to include imageBuffer and imageBuffers
 declare global {
   namespace Express {
     interface Request {
       imageBuffer?: Buffer;
+      imageBuffers?: Buffer[];
     }
   }
 }

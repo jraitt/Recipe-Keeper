@@ -49,6 +49,23 @@ const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImport }) 
     }
   };
 
+  const handleMultiPhotoImport = async (files: File[]) => {
+    setLoading(true);
+    setImportStep('importing');
+    setError(null);
+
+    try {
+      const result = await aiService.importFromMultiplePhotos(files);
+      setImportedRecipe(result);
+      setImportStep('preview');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to import recipe from multiple photos');
+      setImportStep('method');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleUrlImport = async (url: string) => {
     setLoading(true);
     setImportStep('importing');
@@ -127,6 +144,7 @@ const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImport }) 
                   </div>
                   <PhotoImport
                     onImport={handlePhotoImport}
+                    onMultiImport={handleMultiPhotoImport}
                     onCancel={() => {}}
                     loading={loading}
                   />

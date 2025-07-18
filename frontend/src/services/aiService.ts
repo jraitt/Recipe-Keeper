@@ -50,12 +50,36 @@ export const aiService = {
 
     const response = await api.post<AIResponse>('/ai/import/photo', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        // Don't set Content-Type manually for multipart/form-data
+        // Let the browser set it automatically with the boundary
       },
     });
 
     if (!response.data.success) {
       throw new Error(response.data.error || 'Failed to import recipe from photo');
+    }
+
+    return response.data.data as ImportedRecipe;
+  },
+
+  /**
+   * Import recipe from multiple photos
+   */
+  async importFromMultiplePhotos(files: File[]): Promise<ImportedRecipe> {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('images', file);
+    });
+
+    const response = await api.post<AIResponse>('/ai/import/photos', formData, {
+      headers: {
+        // Don't set Content-Type manually for multipart/form-data
+        // Let the browser set it automatically with the boundary
+      },
+    });
+
+    if (!response.data.success) {
+      throw new Error(response.data.error || 'Failed to import recipe from photos');
     }
 
     return response.data.data as ImportedRecipe;

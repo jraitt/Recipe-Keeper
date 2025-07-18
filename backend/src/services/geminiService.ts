@@ -128,6 +128,66 @@ Analyze the image now:
   }
 
   /**
+   * Create multi-photo analysis prompt
+   */
+  private getMultiPhotoAnalysisPrompt(): string {
+    return `
+Analyze these food photos and extract recipe information. You are a professional chef and food analyst.
+These images may show different views of the same recipe (e.g., front and back of a recipe card, ingredients and finished dish, etc.).
+
+Please combine all information from ALL images to create ONE comprehensive recipe.
+
+Please return a JSON object with the following structure:
+{
+  "title": "Recipe name (required)",
+  "servings": "Number of servings (estimate if not visible)",
+  "prepTime": "Preparation time in minutes (estimate)",
+  "cookTime": "Cooking time in minutes (estimate)",
+  "difficulty": "easy|medium|hard|expert",
+  "ingredients": [
+    {
+      "quantity": "Amount as string",
+      "unit": "Unit of measurement",
+      "item": "Ingredient name"
+    }
+  ],
+  "directions": [
+    {
+      "step": 1,
+      "instruction": "Step-by-step instruction"
+    }
+  ],
+  "nutrition": {
+    "calories": "Estimated calories per serving",
+    "protein": "Protein in grams",
+    "carbohydrates": "Carbs in grams",
+    "fat": "Fat in grams",
+    "fiber": "Fiber in grams",
+    "sodium": "Sodium in milligrams"
+  },
+  "tags": ["tag1", "tag2", "tag3"],
+  "confidence": "A number from 0-100 indicating how confident you are in this analysis"
+}
+
+Rules:
+1. Combine information from ALL images - don't duplicate, merge intelligently
+2. If one image shows ingredients and another shows directions, combine both
+3. Use the most complete information available across all images
+4. If images conflict, use the most detailed/clearest source
+5. If you cannot identify the dish from any image, return confidence below 50
+6. Make reasonable estimates for missing information based on similar dishes
+7. Include cooking techniques in the directions
+8. Add relevant tags (cuisine type, dietary restrictions, meal type, etc.)
+9. Ensure ingredients are realistic and proportional
+10. If none of the images contain food, return {"error": "No food images found", "confidence": 0}
+11. Be specific with measurements and cooking times
+12. Return only valid JSON, no additional text
+
+Analyze all images now to create ONE comprehensive recipe:
+`;
+  }
+
+  /**
    * Create URL content analysis prompt
    */
   private getUrlAnalysisPrompt(): string {
@@ -234,6 +294,67 @@ Parse this content:
 
     } catch (error) {
       logger.error(`Photo analysis failed for user ${userId}:`, error);
+      throw this.handleGeminiError(error);
+    }
+  }
+
+  /**
+   * Analyze recipe from multiple photos
+   */
+  async analyzeRecipeFromMultiplePhotos(imageBuffers: Buffer[], userId: string): Promise<any> {
+    try {
+      // Create a simpler cache key using hash of combined buffer lengths and first few bytes
+      const cacheKeyData = imageBuffers.map(buffer => ({
+        size: buffer.length,
+        preview: buffer.slice(0, 100).toString('hex')
+      }));
+      const cacheKey = JSON.stringify(cacheKeyData);
+      const cachedResult = await cacheService.getCachedPhotoAnalysis(Buffer.from(cacheKey));
+      if (cachedResult) {
+        logger.info(`Returning cached multi-photo analysis for user ${userId}`);
+        return cachedResult;
+      }
+
+      // Check rate limits
+      if (!this.checkRateLimit(userId)) {
+        throw new Error('Rate limit exceeded. Please try again later.');
+      }
+
+      logger.info(`Starting multi-photo analysis for user ${userId} with ${imageBuffers.length} images`);
+
+      // Prepare all images for Gemini
+      const imageParts = imageBuffers.map(buffer => ({
+        inlineData: {
+          data: buffer.toString('base64'),
+          mimeType: 'image/jpeg'
+        }
+      }));
+
+      // Get analysis prompt
+      const prompt = this.getMultiPhotoAnalysisPrompt();
+
+      // Call Gemini API with all images
+      const result = await this.model.generateContent([prompt, ...imageParts]);
+      const response = await result.response;
+      const text = response.text();
+
+      logger.info(`Gemini API multi-photo response received for user ${userId}`);
+      logger.info(`Raw multi-photo AI response: ${text}`);
+
+      // Parse JSON response
+      const parsedResponse = this.parseGeminiResponse(text);
+      
+      // Validate and enrich response
+      const validatedResponse = this.validateAndEnrichResponse(parsedResponse);
+
+      // Cache the result
+      await cacheService.setCachedPhotoAnalysis(Buffer.from(cacheKey), validatedResponse);
+
+      logger.info(`Multi-photo analysis completed for user ${userId}`);
+      return validatedResponse;
+
+    } catch (error) {
+      logger.error(`Multi-photo analysis failed for user ${userId}:`, error);
       throw this.handleGeminiError(error);
     }
   }

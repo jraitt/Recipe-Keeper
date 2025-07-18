@@ -5,6 +5,7 @@ A modern, AI-powered web application for storing, organizing, and managing your 
 ## ✨ Features
 
 - 🤖 **AI-Powered Recipe Extraction**: Extract recipes from photos and URLs using Google Gemini
+- 📸 **Multi-Photo Import**: Upload multiple photos of recipe cards for intelligent merging
 - 🗂️ **Smart Organization**: Categorize, tag, and search your recipe collection
 - 📱 **Responsive Design**: Beautiful interface that works on all devices
 - 🔍 **Advanced Search**: Find recipes by ingredients, cooking time, difficulty, and more

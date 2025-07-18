@@ -55,7 +55,7 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-      - VITE_API_URL=https://recipes.compound-interests.com/api
+      - VITE_API_URL=http://localhost:3021/api
       - VITE_HMR_DISABLED=true
 
 volumes:

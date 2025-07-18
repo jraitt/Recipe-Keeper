@@ -69,7 +69,8 @@ app.use('/api/uploads', uploadsRoutes);
 app.use('/api/ai/import', aiImportRoutes);
 
 // API routes fallback
-app.use('/api', (_, res) => {
+app.use('/api', (req, res) => {
+  console.log('FALLBACK ROUTE HIT:', req.method, req.url);
   res.json({ message: 'Recipe Keeper API is running' });
 });
 

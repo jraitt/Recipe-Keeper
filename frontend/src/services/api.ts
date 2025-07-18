@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3021/api';
+console.log('DEBUG: API_BASE_URL =', API_BASE_URL);
 
 // Create axios instance
 export const api = axios.create({
@@ -13,10 +14,20 @@ export const api = axios.create({
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
+    console.log('DEBUG: Making request to', config.baseURL + config.url);
+    console.log('DEBUG: Request data type:', typeof config.data);
+    console.log('DEBUG: Is FormData:', config.data instanceof FormData);
+    
     const token = localStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    
+    // For FormData, remove Content-Type to let browser set it with boundary
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
+    
     return config;
   },
   (error) => {

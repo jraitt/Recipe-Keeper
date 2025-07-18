@@ -87,7 +87,8 @@ GET    /api/recipes/:id       # Get single recipe
 PUT    /api/recipes/:id       # Update recipe
 DELETE /api/recipes/:id       # Delete recipe
 POST   /api/ai/import/url     # Import from URL
-POST   /api/ai/import/photo   # Import from photo
+POST   /api/ai/import/photo   # Import from single photo
+POST   /api/ai/import/photos  # Import from multiple photos (NEW)
 GET    /api/recipes/stats     # User recipe statistics
 ```
 
@@ -102,6 +103,8 @@ GEMINI_API_KEY=your_api_key_here
 - **Model**: `gemini-2.5-flash` (not `gemini-2.0-flash-exp`)
 - **Backend**: Comprehensive web scraping with image extraction
 - **Frontend**: Complete AI import modal with preview editing
+- **Multi-Photo Support**: Intelligent merging of multiple recipe card photos
+- **Upload System**: Multer with Sharp preprocessing for optimal AI analysis
 
 ## Quick Reference
 
@@ -127,7 +130,7 @@ docker-compose up -d
 
 ### 🎯 **Production-Ready Application**
 
-The Recipe Keeper application is now a **complete, production-ready recipe management platform** with AI-powered import capabilities.
+The Recipe Keeper application is now a **complete, production-ready recipe management platform** with advanced AI-powered import capabilities including multi-photo processing.
 
 ### 🚀 **Current System Status**
 
@@ -143,7 +146,7 @@ The Recipe Keeper application is now a **complete, production-ready recipe manag
 - ✅ **Milestone 1**: Backend Foundation (100%)
 - ✅ **Milestone 2**: Frontend Foundation (100%)
 - ✅ **Milestone 3**: Recipe CRUD Operations (100%)
-- ✅ **Milestone 4**: AI Integration (100%) - **PRODUCTION READY**
+- ✅ **Milestone 4**: AI Integration (100%) - **PRODUCTION READY with Multi-Photo Support**
 - ✅ **Milestone 5**: Search & Discovery (90%)
 - ✅ **Milestone 9**: Polish & User Experience (100%)
 
@@ -159,9 +162,11 @@ The Recipe Keeper application is now a **complete, production-ready recipe manag
 
 **AI Integration:**
 - ✅ **Complete AI Recipe Import**: URL-based import with 95%+ confidence
+- ✅ **Multi-Photo Recipe Import**: Support for multiple recipe card photos with intelligent merging
 - ✅ **Automatic Image Extraction**: High-quality recipe images from source websites
 - ✅ **Comprehensive Recipe Data**: Full extraction of ingredients, directions, nutrition
 - ✅ **Professional Preview Interface**: Manual editing capabilities with confidence scoring
+- ✅ **Smart Photo Analysis**: Gemini 2.5 Flash analyzes multiple photos simultaneously
 
 **Production Readiness:**
 - ✅ Complete error handling and user feedback systems
@@ -169,6 +174,7 @@ The Recipe Keeper application is now a **complete, production-ready recipe manag
 - ✅ Professional loading states and progress indicators
 - ✅ Comprehensive form validation and data integrity
 - ✅ Mobile-responsive design with touch-friendly interfaces
+- ✅ Multi-file upload with drag-and-drop support
 
 ### 🎯 **Next Development Priorities**
 
@@ -188,9 +194,46 @@ The Recipe Keeper application is now a **complete, production-ready recipe manag
 
 **AI Integration:**
 - Gemini 2.5 Flash model integration with proper error handling
+- Multi-photo analysis with intelligent recipe data merging
 - Web scraping with JSDOM for comprehensive content extraction
 - Image URL extraction from multiple selectors
+- Multer and Sharp integration for optimal image preprocessing
 - Caching system for API responses to minimize usage
+- FormData handling with proper Content-Type management
+
+## 📸 Multi-Photo Recipe Import (Added 2025-07-18)
+
+### Feature Overview
+The multi-photo import feature allows users to upload multiple photos of a single recipe (e.g., front and back of a recipe card) and have the AI intelligently merge the information into a single comprehensive recipe.
+
+### Technical Implementation
+
+#### Backend Components
+- **Endpoint**: `POST /api/ai/import/photos`
+- **Middleware Chain**: `authenticateToken` → `uploadMultiple` → `preprocessMultipleImages` → route handler
+- **File Processing**: Multer with Sharp preprocessing (resize to 1024x1024, JPEG optimization)
+- **AI Analysis**: Gemini 2.5 Flash processes all images in a single request for intelligent merging
+- **Error Handling**: Comprehensive validation with detailed error messages
+
+#### Frontend Components
+- **Enhanced PhotoImport Component**: Multi-file selection with drag-and-drop
+- **Grid Preview Layout**: Individual photo previews with remove functionality
+- **Smart Detection**: Automatically detects single vs multi-photo scenarios
+- **FormData Handling**: Proper multipart/form-data content type management
+
+#### Key Technical Solutions
+1. **TypeScript Compilation**: Fixed middleware return types and error handling
+2. **Docker Environment**: Resolved environment variable conflicts in docker-compose.yml
+3. **Axios Content-Type**: Fixed FormData serialization issues with request interceptors
+4. **Error Debugging**: Added comprehensive logging throughout the request chain
+
+### Usage
+Users can now:
+1. Select multiple photos in the AI import modal
+2. Preview all selected photos in a grid layout
+3. Remove individual photos if needed
+4. Submit for AI analysis which intelligently merges information from all photos
+5. Review and edit the merged recipe data before saving
 
 ---
 
