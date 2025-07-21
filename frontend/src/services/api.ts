@@ -1,7 +1,13 @@
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3021/api';
+console.log('=== API CONFIGURATION DEBUG ===');
 console.log('DEBUG: API_BASE_URL =', API_BASE_URL);
+console.log('DEBUG: VITE_API_URL from env:', import.meta.env.VITE_API_URL);
+console.log('DEBUG: NODE_ENV:', import.meta.env.NODE_ENV);
+console.log('DEBUG: MODE:', import.meta.env.MODE);
+console.log('DEBUG: All environment variables:', import.meta.env);
+console.log('=== END API CONFIGURATION DEBUG ===');
 
 // Create axios instance
 export const api = axios.create({
@@ -14,9 +20,12 @@ export const api = axios.create({
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
-    console.log('DEBUG: Making request to', config.baseURL + config.url);
-    console.log('DEBUG: Request data type:', typeof config.data);
-    console.log('DEBUG: Is FormData:', config.data instanceof FormData);
+    console.log('🚀 Making API request:', {
+      method: config.method?.toUpperCase(),
+      url: config.url,
+      baseURL: config.baseURL,
+      fullURL: `${config.baseURL}${config.url}`
+    });
     
     const token = localStorage.getItem('authToken');
     if (token) {

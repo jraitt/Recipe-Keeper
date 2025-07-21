@@ -6,15 +6,15 @@ services:
     image: postgres:15-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: recipes
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-recipes}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -23,40 +23,58 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
+      target: ${DOCKER_TARGET:-development}
     restart: unless-stopped
     ports:
-      - "3021:3021"
+      - "${BACKEND_PORT:-3021}:${PORT:-3021}"
     volumes:
-      - ./backend:/app
-      - /app/node_modules
       - uploads:/app/uploads
     environment:
-      - NODE_ENV=development
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/recipes
-      - JWT_SECRET=your-dev-jwt-secret-key
+      - NODE_ENV=${NODE_ENV:-development}
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - PORT=3021
+      - PORT=${PORT:-3021}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - FORCE_HTTPS=${FORCE_HTTPS:-false}
+      - LOG_LEVEL=${LOG_LEVEL:-debug}
     depends_on:
       db:
         condition: service_healthy
-    command: npm run dev
+    command: ${BACKEND_COMMAND:-npm run dev}
 
-  # Frontend Development Server
+  # Frontend Server
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
+      target: ${DOCKER_TARGET:-development}
+      args:
+        - VITE_API_URL=${VITE_API_URL}
     restart: unless-stopped
     ports:
-      - "3020:3020"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - "${FRONTEND_PORT:-3020}:${FRONTEND_INTERNAL_PORT:-3020}"
+    volumes: []
     environment:
-      - NODE_ENV=development
-      - VITE_API_URL=http://localhost:3021/api
-      - VITE_HMR_DISABLED=true
+      - NODE_ENV=${NODE_ENV:-development}
+      - VITE_API_URL=${VITE_API_URL}
+      - VITE_HMR_DISABLED=${VITE_HMR_DISABLED:-true}
+      - VITE_API_TIMEOUT=${VITE_API_TIMEOUT:-30000}
+      - VITE_APP_NAME=${VITE_APP_NAME:-Recipe Keeper}
+      - VITE_APP_VERSION=${VITE_APP_VERSION:-1.0.0}
+      - VITE_NODE_ENV=${NODE_ENV:-development}
+      - VITE_DEBUG=${VITE_DEBUG:-true}
+      - VITE_ENABLE_AI_FEATURES=${VITE_ENABLE_AI_FEATURES:-true}
+      - VITE_ENABLE_ANALYTICS=${VITE_ENABLE_ANALYTICS:-false}
+      - VITE_ENABLE_PWA=${VITE_ENABLE_PWA:-true}
+      - VITE_DEFAULT_THEME=${VITE_DEFAULT_THEME:-light}
+      - VITE_ENABLE_DARK_MODE=${VITE_ENABLE_DARK_MODE:-true}
+      - VITE_ITEMS_PER_PAGE=${VITE_ITEMS_PER_PAGE:-20}
+      - VITE_MAX_FILE_SIZE=${VITE_MAX_FILE_SIZE:-5242880}
+      - VITE_ACCEPTED_IMAGE_TYPES=${VITE_ACCEPTED_IMAGE_TYPES:-image/jpeg,image/png,image/webp}
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:

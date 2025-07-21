@@ -8,7 +8,19 @@
       "Bash(docker-compose:*)",
       "Bash(docker-compose up:*)",
       "Bash(touch:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(docker logs:*)",
+      "Bash(docker exec:*)",
+      "Bash(timeout 5 docker logs recipe-keeper-backend-1 -f)",
+      "Bash(docker compose logs:*)",
+      "Bash(npm run build:*)",
+      "Bash(echo $NODE_ENV)",
+      "Bash(echo $VITE_API_URL)",
+      "Bash(ls:*)",
+      "Bash(rm:*)",
+      "Bash(docker compose:*)",
+      "Bash(docker system prune:*)",
+      "Bash(dir:*)"
     ],
     "deny": []
   }

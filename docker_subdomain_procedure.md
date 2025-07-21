@@ -123,6 +123,12 @@ sudo certbot --nginx -d recipes.compound-interests.com
 
 ### 5. 🐳 Deploy with Docker
 
+**Set up production environment:**
+```bash
+# Copy production environment variables
+cp .env.production .env
+```
+
 **Build and start the containers:**
 ```bash
 docker compose up -d --build
@@ -168,6 +174,8 @@ recipe-keeper-db        postgres:15-alpine        "docker-entrypoint.s…"   db 
 ```bash
 cd Recipe-Keeper
 git pull origin main
+# Ensure production environment is active
+cp .env.production .env
 docker compose down
 docker compose up -d --build
 ```
