@@ -91,7 +91,7 @@ export class RecipeService {
     ]);
 
     return {
-      recipes: recipes.map(recipe => this.formatRecipeResponse(recipe)),
+      recipes: recipes.map((recipe: any) => this.formatRecipeResponse(recipe)),
       pagination: {
         page,
         limit,
@@ -238,7 +238,7 @@ export class RecipeService {
     return {
       totalRecipes,
       averageRating: avgRating._avg.rating || 0,
-      byDifficulty: stats.reduce((acc, stat) => {
+      byDifficulty: stats.reduce((acc: Record<string, number>, stat: { difficulty: string | null; _count: { id: number } }) => {
         if (stat.difficulty) {
           acc[stat.difficulty] = stat._count.id;
         }
@@ -273,7 +273,7 @@ export class RecipeService {
   /**
    * Format recipe response to match API contract
    */
-  private formatRecipeResponse(recipe: any): RecipeResponse {
+  private formatRecipeResponse(recipe: any & { user: { id: string; name?: string; email: string; } }): RecipeResponse {
     return {
       id: recipe.id,
       title: recipe.title,

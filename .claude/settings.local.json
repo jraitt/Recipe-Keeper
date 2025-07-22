@@ -20,7 +20,9 @@
       "Bash(rm:*)",
       "Bash(docker compose:*)",
       "Bash(docker system prune:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(npm install:*)",
+      "Bash(sudo rm:*)"
     ],
     "deny": []
   }
