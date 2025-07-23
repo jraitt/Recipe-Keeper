@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Clock, Users, Star, ChefHat } from 'lucide-react';
 import { Recipe } from '../../types';
+import { fixImageUrl } from '../../utils/imageUtils';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -33,11 +34,16 @@ export const RecipeCard = ({ recipe, onDelete, onEdit }: RecipeCardProps) => {
         {/* Image */}
         <div className="relative h-48 bg-gray-200">
           <img
-            src={recipe.photoUrl}
+            src={fixImageUrl(recipe.photoUrl)}
             alt={recipe.title}
             className="w-full h-full object-cover"
+            onLoad={(e) => {
+              const target = e.target as HTMLImageElement;
+              console.log('✅ Image loaded successfully:', target.src);
+            }}
             onError={(e) => {
               const target = e.target as HTMLImageElement;
+              console.error('❌ Image failed to load:', target.src, 'Original URL:', recipe.photoUrl);
               target.src = '/placeholder-recipe.svg';
             }}
           />

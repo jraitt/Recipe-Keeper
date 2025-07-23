@@ -32,6 +32,7 @@ export interface Recipe {
   title: string;
   rating: number;
   photoUrl: string;
+  sourceUrl?: string;
   prepTime: number;
   cookTime: number;
   servings: number;

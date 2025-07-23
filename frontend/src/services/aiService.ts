@@ -35,6 +35,7 @@ interface ImportedRecipe {
   };
   tags?: string[];
   imageUrl?: string;
+  sourceUrl?: string;
   confidence: number;
   aiGenerated: boolean;
   generatedAt: string;

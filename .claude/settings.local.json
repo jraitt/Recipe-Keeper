@@ -22,7 +22,8 @@
       "Bash(docker system prune:*)",
       "Bash(dir:*)",
       "Bash(npm install:*)",
-      "Bash(sudo rm:*)"
+      "Bash(sudo rm:*)",
+      "WebFetch(domain:www.allrecipes.com)"
     ],
     "deny": []
   }

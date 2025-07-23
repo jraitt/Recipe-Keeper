@@ -27,6 +27,7 @@ model Recipe {
   title       String
   rating      Int?     @db.SmallInt
   photoUrl    String   @map("photo_url")
+  sourceUrl   String?  @map("source_url")
   prepTime    Int?     @map("prep_time")
   cookTime    Int?     @map("cook_time")
   servings    Int?

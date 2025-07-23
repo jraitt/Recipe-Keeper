@@ -30,7 +30,7 @@ export const Layout = ({ children }: LayoutProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="h-screen flex flex-col bg-gray-50">
       <nav className="bg-white shadow-sm relative" role="navigation" aria-label="Main navigation">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
@@ -156,7 +156,7 @@ export const Layout = ({ children }: LayoutProps) => {
         </div>
       </nav>
       
-      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8" role="main">
+      <main className="flex-1" role="main">
         {children}
       </main>
     </div>

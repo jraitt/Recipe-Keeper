@@ -2,6 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { authenticateToken } from '../middleware/auth';
 import { uploadSingle, uploadMultiple } from '../middleware/upload';
 import { geminiService } from '../services/geminiService';
+import { imageDownloadService } from '../services/imageDownloadService';
 import { logger } from '../utils/logger';
 import fs from 'fs';
 import sharp from 'sharp';
@@ -351,6 +352,27 @@ router.post('/url', authenticateToken, async (req: Request, res: Response) => {
     }
 
     logger.info(`URL analysis completed for user ${userId} with confidence ${analysisResult.confidence}%`);
+
+    // Download and store the recipe image locally if available
+    if (analysisResult.imageUrl) {
+      logger.info(`Downloading recipe image from: ${analysisResult.imageUrl}`);
+      const localImageUrl = await imageDownloadService.downloadAndStoreImage(
+        analysisResult.imageUrl, 
+        analysisResult.title
+      );
+      
+      if (localImageUrl) {
+        logger.info(`Recipe image stored locally: ${localImageUrl}`);
+        analysisResult.imageUrl = localImageUrl;
+      } else {
+        logger.warn(`Failed to download recipe image, keeping original URL: ${analysisResult.imageUrl}`);
+        // Keep the original URL as fallback
+      }
+    }
+
+    // Add the source URL to the analysis result
+    analysisResult.sourceUrl = url;
+    logger.info(`Added source URL to analysis result: ${url}`);
 
     return res.json({
       success: true,

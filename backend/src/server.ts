@@ -15,6 +15,7 @@ import authRoutes from './routes/auth';
 import { recipeRoutes } from './routes/recipes';
 import uploadsRoutes from './routes/uploads';
 import aiImportRoutes from './routes/aiImport';
+import photoSuggestionsRoutes from './routes/photoSuggestions';
 
 // Load environment variables
 dotenv.config();
@@ -67,6 +68,9 @@ app.use('/api/uploads', uploadsRoutes);
 
 // AI Import routes
 app.use('/api/ai/import', aiImportRoutes);
+
+// Photo suggestions routes
+app.use('/api/photos', photoSuggestionsRoutes);
 
 // API routes fallback
 app.use('/api', (req, res) => {

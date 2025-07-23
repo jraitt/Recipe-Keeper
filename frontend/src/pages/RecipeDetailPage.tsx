@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Users, Star, ChefHat, Edit, Trash2 } from 'lucide-react';
+import { ArrowLeft, Clock, Users, Star, ChefHat, Edit, Trash2, ExternalLink } from 'lucide-react';
 import { useRecipeStore } from '../store/recipeStore';
 import { useAuthStore } from '../store/authStore';
 import { RecipeShare } from '../components/recipe/RecipeShare';
@@ -9,6 +9,7 @@ import { PrintRecipe } from '../components/recipe/PrintRecipe';
 import { CookingTimer } from '../components/recipe/CookingTimer';
 import { Tooltip } from '../components/common/Tooltip';
 import { Loading } from '../components/common/Loading';
+import { fixImageUrl } from '../utils/imageUtils';
 
 export const RecipeDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -99,7 +100,8 @@ export const RecipeDetailPage = () => {
   const totalTime = (currentRecipe.prepTime || 0) + (currentRecipe.cookTime || 0);
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-white">
+      <div className="max-w-4xl mx-auto px-4 py-6">
       {/* Back Button */}
       <Link
         to="/recipes"
@@ -113,7 +115,7 @@ export const RecipeDetailPage = () => {
       <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
         <div className="relative h-64 md:h-80">
           <img
-            src={currentRecipe.photoUrl}
+            src={fixImageUrl(currentRecipe.photoUrl)}
             alt={currentRecipe.title}
             className="w-full h-full object-cover"
             onError={(e) => {
@@ -174,6 +176,24 @@ export const RecipeDetailPage = () => {
             </Tooltip>
           </div>
         </div>
+        
+        {/* Source URL if available */}
+        {currentRecipe.sourceUrl && (
+          <div className="px-4 py-3 bg-gray-50 border-t">
+            <div className="text-sm text-gray-600">
+              <span className="font-medium">URL Source:</span>{' '}
+              <a
+                href={currentRecipe.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center gap-1"
+              >
+                <span className="truncate max-w-xs">{currentRecipe.sourceUrl}</span>
+                <ExternalLink className="w-3 h-3 flex-shrink-0" />
+              </a>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Action Buttons */}
@@ -195,6 +215,36 @@ export const RecipeDetailPage = () => {
           <CookingTimer />
         </div>
       )}
+
+      {/* Recipe Info Card */}
+      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {currentRecipe.prepTime !== undefined && currentRecipe.prepTime > 0 && (
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">Prep Time:</h3>
+              <p className="text-2xl font-bold text-blue-600">{currentRecipe.prepTime} mins</p>
+            </div>
+          )}
+          {currentRecipe.cookTime !== undefined && currentRecipe.cookTime > 0 && (
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">Cook Time:</h3>
+              <p className="text-2xl font-bold text-blue-600">{currentRecipe.cookTime} mins</p>
+            </div>
+          )}
+          {totalTime > 0 && (
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">Total Time:</h3>
+              <p className="text-2xl font-bold text-blue-600">{totalTime} mins</p>
+            </div>
+          )}
+          {currentRecipe.servings && currentRecipe.servings > 0 && (
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">Servings:</h3>
+              <p className="text-2xl font-bold text-blue-600">{currentRecipe.servings}</p>
+            </div>
+          )}
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Ingredients */}
@@ -303,6 +353,7 @@ export const RecipeDetailPage = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };
