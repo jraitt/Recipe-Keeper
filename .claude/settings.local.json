@@ -31,7 +31,8 @@
       "Bash(DATABASE_URL=*:*)",
       "Bash(mkdir:*)",
       "Bash(mv:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git commit:*)"
     ],
     "deny": []
   }
