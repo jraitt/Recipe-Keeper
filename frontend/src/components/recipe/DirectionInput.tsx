@@ -102,7 +102,7 @@ export const DirectionInput = ({ directions, onChange, error }: DirectionInputPr
                 onChange={(e) => updateDirection(index, e.target.value)}
                 placeholder="Describe this step..."
                 rows={2}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
               />
               
               {/* Remove button */}
@@ -133,7 +133,7 @@ export const DirectionInput = ({ directions, onChange, error }: DirectionInputPr
               onKeyPress={handleKeyPress}
               placeholder="Describe the next step... (Ctrl+Enter to add)"
               rows={2}
-              className="w-full px-3 py-2 border-0 focus:ring-0 focus:outline-none text-sm resize-none"
+              className="w-full px-3 py-2 border-0 focus:ring-0 focus:outline-none text-sm text-gray-900 resize-none"
             />
           </div>
           

@@ -27,6 +27,20 @@ export class RecipeController {
       if (!recipeData.photoUrl) {
         recipeData.photoUrl = '';
       }
+      
+      // Set default visibility if not provided
+      if (!recipeData.visibility) {
+        recipeData.visibility = 'private';
+      }
+
+      // Validate visibility
+      if (recipeData.visibility && !['private', 'public'].includes(recipeData.visibility)) {
+        res.status(400).json({
+          success: false,
+          error: 'Visibility must be either "private" or "public"',
+        });
+        return;
+      }
 
       // Validate ingredients format
       if (!Array.isArray(recipeData.ingredients) || recipeData.ingredients.length === 0) {
@@ -166,6 +180,9 @@ export class RecipeController {
       const recipeId = req.params.id;
       const updateData = req.body;
 
+      // Debug logging for visibility updates
+      console.log('Recipe update received:', { recipeId, visibility: updateData.visibility, hasVisibility: 'visibility' in updateData });
+
       if (!recipeId) {
         res.status(400).json({
           success: false,
@@ -179,6 +196,15 @@ export class RecipeController {
         res.status(400).json({
           success: false,
           error: 'Rating must be between 1 and 5',
+        });
+        return;
+      }
+
+      // Validate visibility if provided in update
+      if (updateData.visibility && !['private', 'public'].includes(updateData.visibility)) {
+        res.status(400).json({
+          success: false,
+          error: 'Visibility must be either "private" or "public"',
         });
         return;
       }
@@ -270,11 +296,39 @@ export class RecipeController {
   }
 
   /**
-   * Search public recipes (future feature)
+   * Get all public recipes (excluding current user's recipes)
+   * GET /api/recipes/public
+   */
+  async getPublicRecipes(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const currentUserId = req.user!.id;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
+      const search = req.query.search as string;
+      const tags = req.query.tags ? (req.query.tags as string).split(',') : undefined;
+
+      const result = await recipeService.getPublicRecipes(page, limit, search, tags, currentUserId);
+
+      res.json({
+        success: true,
+        data: result,
+      });
+    } catch (error: any) {
+      console.error('Error fetching public recipes:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch public recipes',
+      });
+    }
+  }
+
+  /**
+   * Search public recipes
    * GET /api/recipes/search/public
    */
-  async searchPublicRecipes(req: Request, res: Response): Promise<void> {
+  async searchPublicRecipes(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
+      const currentUserId = req.user!.id;
       const query = req.query.q as string;
       const page = parseInt(req.query.page as string) || 1;
       const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
@@ -287,7 +341,7 @@ export class RecipeController {
         return;
       }
 
-      const result = await recipeService.searchPublicRecipes(query, page, limit);
+      const result = await recipeService.searchPublicRecipes(query, page, limit, currentUserId);
 
       res.json({
         success: true,

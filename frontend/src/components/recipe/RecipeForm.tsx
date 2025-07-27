@@ -37,6 +37,7 @@ const recipeSchema = z.object({
     sodium: z.number().min(0).optional(),
   }).optional(),
   tags: z.array(z.string()).optional(),
+  visibility: z.enum(['private', 'public']).default('private'),
 });
 
 type RecipeFormData = z.infer<typeof recipeSchema>;
@@ -81,6 +82,7 @@ export const RecipeForm = ({
       directions: [],
       nutrition: {},
       tags: [],
+      visibility: 'private',
     },
   });
 
@@ -103,6 +105,7 @@ export const RecipeForm = ({
         directions: recipe.directions,
         nutrition: recipe.nutrition || {},
         tags: recipe.tags || [],
+        visibility: recipe.visibility || 'private',
       });
     }
   }, [recipe, reset]);
@@ -191,7 +194,7 @@ export const RecipeForm = ({
                   <input
                     type="text"
                     {...register('title')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter recipe title"
                   />
                   {errors.title && (
@@ -225,7 +228,7 @@ export const RecipeForm = ({
                     </label>
                     <select
                       {...register('rating', { valueAsNumber: true })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="">Select...</option>
                       <option value={1}>1 ⭐</option>
@@ -248,7 +251,7 @@ export const RecipeForm = ({
                       type="number"
                       {...register('prepTime', { valueAsNumber: true })}
                       min="0"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="15"
                     />
                     {errors.prepTime && (
@@ -265,7 +268,7 @@ export const RecipeForm = ({
                       type="number"
                       {...register('cookTime', { valueAsNumber: true })}
                       min="0"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="30"
                     />
                     {errors.cookTime && (
@@ -282,7 +285,7 @@ export const RecipeForm = ({
                       type="number"
                       {...register('servings', { valueAsNumber: true })}
                       min="1"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="4"
                     />
                     {errors.servings && (
@@ -298,7 +301,7 @@ export const RecipeForm = ({
                   </label>
                   <select
                     {...register('difficulty')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="">Select difficulty...</option>
                     <option value="easy">Easy</option>
@@ -308,6 +311,23 @@ export const RecipeForm = ({
                   </select>
                   {errors.difficulty && (
                     <p className="mt-1 text-sm text-red-600">{errors.difficulty.message}</p>
+                  )}
+                </div>
+
+                {/* Visibility */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Recipe Visibility
+                  </label>
+                  <select
+                    {...register('visibility')}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="private">Private - Only visible to me</option>
+                    <option value="public">Public - Visible to all users</option>
+                  </select>
+                  {errors.visibility && (
+                    <p className="mt-1 text-sm text-red-600">{errors.visibility.message}</p>
                   )}
                 </div>
               </div>
@@ -379,7 +399,7 @@ export const RecipeForm = ({
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyPress={handleTagKeyPress}
                   placeholder="Add tag..."
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
                 <button
                   type="button"
@@ -408,7 +428,7 @@ export const RecipeForm = ({
                     type="number"
                     {...register('nutrition.calories', { valueAsNumber: true })}
                     min="0"
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="250"
                   />
                 </div>
@@ -422,7 +442,7 @@ export const RecipeForm = ({
                     {...register('nutrition.protein', { valueAsNumber: true })}
                     min="0"
                     step="0.1"
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="10"
                   />
                 </div>
@@ -436,7 +456,7 @@ export const RecipeForm = ({
                     {...register('nutrition.carbohydrates', { valueAsNumber: true })}
                     min="0"
                     step="0.1"
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="30"
                   />
                 </div>
@@ -450,7 +470,7 @@ export const RecipeForm = ({
                     {...register('nutrition.fat', { valueAsNumber: true })}
                     min="0"
                     step="0.1"
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="8"
                   />
                 </div>
@@ -464,7 +484,7 @@ export const RecipeForm = ({
                     {...register('nutrition.fiber', { valueAsNumber: true })}
                     min="0"
                     step="0.1"
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="2"
                   />
                 </div>
@@ -477,7 +497,7 @@ export const RecipeForm = ({
                     type="number"
                     {...register('nutrition.sodium', { valueAsNumber: true })}
                     min="0"
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="300"
                   />
                 </div>

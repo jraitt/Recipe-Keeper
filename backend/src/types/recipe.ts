@@ -31,6 +31,7 @@ export interface CreateRecipeRequest {
   directions: RecipeDirection[];
   nutrition?: RecipeNutrition;
   tags?: string[];
+  visibility?: 'private' | 'public';
 }
 
 export interface UpdateRecipeRequest extends Partial<CreateRecipeRequest> {
@@ -51,6 +52,7 @@ export interface RecipeResponse {
   directions: RecipeDirection[];
   nutrition?: RecipeNutrition;
   tags: string[];
+  visibility: 'private' | 'public';
   createdAt: Date;
   updatedAt: Date;
   user: {

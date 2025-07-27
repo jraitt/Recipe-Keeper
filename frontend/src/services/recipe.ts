@@ -28,6 +28,7 @@ export interface CreateRecipeRequest {
     sodium?: number;
   };
   tags?: string[];
+  visibility?: 'private' | 'public';
 }
 
 export interface RecipeListResponse {
@@ -109,6 +110,24 @@ export const recipeService = {
   // Get user recipe statistics
   async getStats(): Promise<RecipeStatsResponse> {
     const response = await api.get<RecipeStatsResponse>('/recipes/stats');
+    return response.data;
+  },
+
+  // Get public recipes from all users
+  async getPublicRecipes(params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    tags?: string[];
+  }): Promise<RecipeListResponse> {
+    const searchParams = new URLSearchParams();
+    
+    if (params?.page) searchParams.append('page', params.page.toString());
+    if (params?.limit) searchParams.append('limit', params.limit.toString());
+    if (params?.search) searchParams.append('search', params.search);
+    if (params?.tags?.length) searchParams.append('tags', params.tags.join(','));
+
+    const response = await api.get<RecipeListResponse>(`/recipes/public?${searchParams}`);
     return response.data;
   },
 

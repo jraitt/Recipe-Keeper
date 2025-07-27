@@ -4,11 +4,12 @@ import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
 
-// Public routes (future use)
-router.get('/search/public', recipeController.searchPublicRecipes);
-
 // Protected routes - require authentication
 router.use(authenticateToken);
+
+// Community recipes (public recipes from other users)
+router.get('/public', recipeController.getPublicRecipes);
+router.get('/search/public', recipeController.searchPublicRecipes);
 
 // Recipe CRUD operations
 router.post('/', recipeController.createRecipe);

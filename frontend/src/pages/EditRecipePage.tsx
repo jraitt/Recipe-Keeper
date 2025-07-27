@@ -125,28 +125,30 @@ export const EditRecipePage = () => {
   }
 
   return (
-    <div>
-      {/* Global Error Display */}
-      {error && (
-        <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-red-600">{error}</p>
-            <button
-              onClick={clearError}
-              className="text-red-600 hover:text-red-800"
-            >
-              ×
-            </button>
+    <div className="min-h-full bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        {/* Global Error Display */}
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-red-600">{error}</p>
+              <button
+                onClick={clearError}
+                className="text-red-600 hover:text-red-800"
+              >
+                ×
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <RecipeForm
-        recipe={currentRecipe}
-        onSubmit={handleSubmit}
-        isLoading={isLoading}
-        submitLabel="Update Recipe"
-      />
+        <RecipeForm
+          recipe={currentRecipe}
+          onSubmit={handleSubmit}
+          isLoading={isLoading}
+          submitLabel="Update Recipe"
+        />
+      </div>
     </div>
   );
 };

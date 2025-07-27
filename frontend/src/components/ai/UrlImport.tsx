@@ -75,7 +75,7 @@ const UrlImport: React.FC<UrlImportProps> = ({ onImport, onCancel, loading = fal
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://example.com/recipe"
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               disabled={loading}
             />
             <Link className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />

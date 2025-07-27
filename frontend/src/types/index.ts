@@ -41,6 +41,7 @@ export interface Recipe {
   directions: Direction[];
   nutrition: Nutrition;
   tags: string[];
+  visibility: 'private' | 'public';
   createdAt: string;
   updatedAt: string;
   userId: string;

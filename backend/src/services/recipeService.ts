@@ -54,12 +54,71 @@ export class RecipeService {
   ) {
     const offset = (page - 1) * limit;
 
+    // If we have search term, use a hybrid approach
+    if (search) {
+      // First get all user recipes with basic filters
+      const allRecipes = await prisma.recipe.findMany({
+        where: {
+          userId,
+          deletedAt: null,
+          ...(tags && tags.length > 0 && {
+            tags: { hasSome: tags }
+          })
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      // Filter recipes by search term (title, ingredients, or tags)
+      const searchLower = search.toLowerCase();
+      const filteredRecipes = allRecipes.filter(recipe => {
+        // Search in title
+        if (recipe.title.toLowerCase().includes(searchLower)) return true;
+        
+        // Search in tags
+        if (recipe.tags.some(tag => tag.toLowerCase().includes(searchLower))) return true;
+        
+        // Search in ingredients
+        if (Array.isArray(recipe.ingredients)) {
+          return (recipe.ingredients as any[]).some(ingredient => 
+            ingredient.item && ingredient.item.toLowerCase().includes(searchLower)
+          );
+        }
+        
+        return false;
+      });
+
+      // Apply pagination
+      const total = filteredRecipes.length;
+      const paginatedRecipes = filteredRecipes.slice(offset, offset + limit);
+
+      return {
+        recipes: paginatedRecipes.map((recipe: any) => this.formatRecipeResponse(recipe)),
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+          hasNext: page * limit < total,
+          hasPrev: page > 1,
+        },
+      };
+    }
+
     const where: any = {
       userId,
       deletedAt: null,
     };
 
-    // Add search filter
+    // Add search filter for non-ingredient search
     if (search) {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
@@ -67,9 +126,57 @@ export class RecipeService {
       ];
     }
 
-    // Add tags filter
+    // Add tags filter (case-insensitive)
     if (tags && tags.length > 0) {
-      where.tags = { hassome: tags };
+      // For case-insensitive matching, we'll get all user recipes first
+      // and then filter them programmatically
+      const allRecipes = await prisma.recipe.findMany({
+        where: {
+          userId,
+          deletedAt: null,
+          ...(search && {
+            OR: [
+              { title: { contains: search, mode: 'insensitive' } },
+              { tags: { hasSome: [search] } },
+            ]
+          })
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      // Filter recipes that have matching tags (case-insensitive)
+      const filteredRecipes = allRecipes.filter(recipe => 
+        tags.some(tag => 
+          recipe.tags.some(recipeTag => 
+            recipeTag.toLowerCase() === tag.toLowerCase()
+          )
+        )
+      );
+
+      // Apply pagination to filtered results
+      const total = filteredRecipes.length;
+      const paginatedRecipes = filteredRecipes.slice(offset, offset + limit);
+
+      return {
+        recipes: paginatedRecipes.map((recipe: any) => this.formatRecipeResponse(recipe)),
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+          hasNext: page * limit < total,
+          hasPrev: page > 1,
+        },
+      };
     }
 
     const [recipes, total] = await Promise.all([
@@ -164,6 +271,7 @@ export class RecipeService {
         ...(updateData.directions && { directions: updateData.directions as any }),
         ...(updateData.nutrition !== undefined && { nutrition: updateData.nutrition as any }),
         ...(updateData.tags && { tags: updateData.tags }),
+        ...(updateData.visibility && { visibility: updateData.visibility }),
       },
       include: {
         user: {
@@ -250,26 +358,134 @@ export class RecipeService {
   }
 
   /**
-   * Search recipes across all public recipes (future feature)
+   * Get all public recipes with pagination and search
    */
-  async searchPublicRecipes(
-    _query: string,
+  async getPublicRecipes(
     page: number = 1,
-    limit: number = 20
+    limit: number = 20,
+    search?: string,
+    tags?: string[],
+    excludeUserId?: string
   ) {
-    // For now, this returns empty as we don't have public recipes yet
-    // This can be implemented later when we add public recipe sharing
+    const offset = (page - 1) * limit;
+
+    // If we have search term, use the hybrid approach like getUserRecipes
+    if (search) {
+      const allRecipes = await prisma.recipe.findMany({
+        where: {
+          visibility: 'public',
+          deletedAt: null,
+          ...(excludeUserId && { userId: { not: excludeUserId } }),
+          ...(tags && tags.length > 0 && {
+            tags: { hasSome: tags }
+          })
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      // Filter recipes by search term (title, ingredients, or tags)
+      const searchLower = search.toLowerCase();
+      const filteredRecipes = allRecipes.filter(recipe => {
+        // Search in title
+        if (recipe.title.toLowerCase().includes(searchLower)) return true;
+        
+        // Search in tags
+        if (recipe.tags.some(tag => tag.toLowerCase().includes(searchLower))) return true;
+        
+        // Search in ingredients
+        if (Array.isArray(recipe.ingredients)) {
+          return (recipe.ingredients as any[]).some(ingredient => 
+            ingredient.item && ingredient.item.toLowerCase().includes(searchLower)
+          );
+        }
+        
+        return false;
+      });
+
+      // Apply pagination
+      const total = filteredRecipes.length;
+      const paginatedRecipes = filteredRecipes.slice(offset, offset + limit);
+
+      return {
+        recipes: paginatedRecipes.map((recipe: any) => this.formatRecipeResponse(recipe)),
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+          hasNext: page * limit < total,
+          hasPrev: page > 1,
+        },
+      };
+    }
+
+    // No search term, use direct query
+    const where: any = {
+      visibility: 'public',
+      deletedAt: null,
+    };
+
+    // Exclude current user's recipes
+    if (excludeUserId) {
+      where.userId = { not: excludeUserId };
+    }
+
+    // Add tags filter
+    if (tags && tags.length > 0) {
+      where.tags = { hasSome: tags };
+    }
+
+    const [recipes, total] = await Promise.all([
+      prisma.recipe.findMany({
+        where,
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+        skip: offset,
+        take: limit,
+      }),
+      prisma.recipe.count({ where }),
+    ]);
+
     return {
-      recipes: [] as RecipeResponse[],
+      recipes: recipes.map((recipe: any) => this.formatRecipeResponse(recipe)),
       pagination: {
         page,
         limit,
-        total: 0,
-        totalPages: 0,
-        hasNext: false,
-        hasPrev: false,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNext: page * limit < total,
+        hasPrev: page > 1,
       },
     };
+  }
+
+  /**
+   * Search recipes across all public recipes
+   */
+  async searchPublicRecipes(
+    query: string,
+    page: number = 1,
+    limit: number = 20,
+    excludeUserId?: string
+  ) {
+    return this.getPublicRecipes(page, limit, query, undefined, excludeUserId);
   }
 
   /**
@@ -290,6 +506,7 @@ export class RecipeService {
       directions: recipe.directions,
       nutrition: recipe.nutrition,
       tags: recipe.tags,
+      visibility: recipe.visibility || 'private',
       createdAt: recipe.createdAt,
       updatedAt: recipe.updatedAt,
       user: recipe.user,

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Filter, X } from 'lucide-react';
 
 interface RecipeSearchProps {
@@ -21,15 +21,28 @@ export const RecipeSearch = ({
   const [showFilters, setShowFilters] = useState(false);
   const [localSearch, setLocalSearch] = useState(searchQuery);
 
+  // Sync localSearch with parent searchQuery
+  useEffect(() => {
+    setLocalSearch(searchQuery);
+  }, [searchQuery]);
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearchChange(localSearch);
     onSearch();
   };
 
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setLocalSearch(value);
+    onSearchChange(value); // Update parent state immediately
+  };
+
   const handleTagToggle = (tag: string) => {
-    const newTags = selectedTags.includes(tag)
-      ? selectedTags.filter(t => t !== tag)
+    // Case-insensitive tag comparison
+    const isSelected = selectedTags.some(t => t.toLowerCase() === tag.toLowerCase());
+    const newTags = isSelected
+      ? selectedTags.filter(t => t.toLowerCase() !== tag.toLowerCase())
       : [...selectedTags, tag];
     onTagsChange(newTags);
   };
@@ -51,10 +64,10 @@ export const RecipeSearch = ({
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
-            placeholder="Search recipes, ingredients, or tags..."
+            placeholder="Search recipes, ingredients, and tags..."
             value={localSearch}
-            onChange={(e) => setLocalSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            onChange={handleSearchInputChange}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
         <button
@@ -139,7 +152,7 @@ export const RecipeSearch = ({
                   key={tag}
                   onClick={() => handleTagToggle(tag)}
                   className={`px-3 py-1 text-sm rounded-full border transition-colors ${
-                    selectedTags.includes(tag)
+                    selectedTags.some(t => t.toLowerCase() === tag.toLowerCase())
                       ? 'bg-blue-600 text-white border-blue-600'
                       : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                   }`}

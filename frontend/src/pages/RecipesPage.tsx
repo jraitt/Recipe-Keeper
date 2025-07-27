@@ -1,13 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Upload } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useRecipeStore } from '../store/recipeStore';
 import { useAuthStore } from '../store/authStore';
 import { RecipeGrid } from '../components/recipe/RecipeGrid';
 import { RecipeSearch } from '../components/recipe/RecipeSearch';
-import ImportModal from '../components/ai/ImportModal';
-import { recipeService } from '../services/recipe';
-import { aiService } from '../services/aiService';
 
 export const RecipesPage = () => {
   const navigate = useNavigate();
@@ -27,7 +24,7 @@ export const RecipesPage = () => {
   } = useRecipeStore();
 
   const [availableTags, setAvailableTags] = useState<string[]>([]);
-  const [showImportModal, setShowImportModal] = useState(false);
+  const hasInitialFetched = useRef(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -35,9 +32,14 @@ export const RecipesPage = () => {
       return;
     }
 
-    // Load recipes on page load
-    fetchRecipes();
-  }, [isAuthenticated, navigate, fetchRecipes]);
+    // Prevent duplicate calls
+    if (hasInitialFetched.current) {
+      return;
+    }
+
+    hasInitialFetched.current = true;
+    fetchRecipes({ page: 1, search: '', tags: [] });
+  }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     // Extract available tags from recipes
@@ -50,6 +52,14 @@ export const RecipesPage = () => {
 
   const handleSearch = () => {
     fetchRecipes({ page: 1, search: searchQuery, tags: selectedTags });
+  };
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  const handleTagsChange = (tags: string[]) => {
+    setSelectedTags(tags);
   };
 
   const handleDelete = async (id: string) => {
@@ -68,31 +78,6 @@ export const RecipesPage = () => {
     navigate('/recipes/new');
   };
 
-  const handleShowImportModal = () => {
-    setShowImportModal(true);
-  };
-
-  const handleImport = async (recipe: any) => {
-    try {
-      // Convert AI recipe to our format
-      const convertedRecipe = aiService.convertToRecipe(recipe);
-      
-      // Create the recipe
-      const response = await recipeService.createRecipe(convertedRecipe);
-      
-      // Refresh the recipes list
-      fetchRecipes();
-      
-      // Close the modal
-      setShowImportModal(false);
-      
-      // Navigate to the new recipe
-      navigate(`/recipes/${response.data.recipe.id}`);
-    } catch (error) {
-      console.error('Failed to import recipe:', error);
-      throw error;
-    }
-  };
 
   const handleLoadMore = () => {
     if (pagination?.hasNext) {
@@ -109,9 +94,10 @@ export const RecipesPage = () => {
   }
 
   return (
-    <div>
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+    <div className="min-h-full bg-white">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-4 sm:mb-0">
           My Recipes
         </h1>
@@ -123,13 +109,6 @@ export const RecipesPage = () => {
           >
             <Plus className="w-4 h-4" />
             Add Recipe
-          </button>
-          <button
-            onClick={handleShowImportModal}
-            className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
-          >
-            <Upload className="w-4 h-4" />
-            Import from Photo or URL
           </button>
         </div>
       </div>
@@ -153,8 +132,8 @@ export const RecipesPage = () => {
       <RecipeSearch
         searchQuery={searchQuery}
         selectedTags={selectedTags}
-        onSearchChange={setSearchQuery}
-        onTagsChange={setSelectedTags}
+        onSearchChange={handleSearchChange}
+        onTagsChange={handleTagsChange}
         onSearch={handleSearch}
         availableTags={availableTags}
       />
@@ -198,12 +177,7 @@ export const RecipesPage = () => {
         </div>
       )}
 
-      {/* AI Import Modal */}
-      <ImportModal
-        isOpen={showImportModal}
-        onClose={() => setShowImportModal(false)}
-        onImport={handleImport}
-      />
+      </div>
     </div>
   );
 };

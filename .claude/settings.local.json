@@ -23,7 +23,8 @@
       "Bash(dir:*)",
       "Bash(npm install:*)",
       "Bash(sudo rm:*)",
-      "WebFetch(domain:www.allrecipes.com)"
+      "WebFetch(domain:www.allrecipes.com)",
+      "Bash(npx prisma migrate dev:*)"
     ],
     "deny": []
   }

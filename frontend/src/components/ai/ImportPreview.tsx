@@ -94,7 +94,7 @@ const ImportPreview: React.FC<ImportPreviewProps> = ({ recipe, onConfirm, onCanc
               type="text"
               value={editedRecipe.title}
               onChange={(e) => handleInputChange('title', e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           ) : (
             <p className="text-lg font-medium text-gray-900">{editedRecipe.title}</p>
@@ -112,7 +112,7 @@ const ImportPreview: React.FC<ImportPreviewProps> = ({ recipe, onConfirm, onCanc
                   type="number"
                   value={editedRecipe.servings}
                   onChange={(e) => handleInputChange('servings', parseInt(e.target.value))}
-                  className="w-16 p-1 border border-gray-300 rounded text-sm"
+                  className="w-16 p-1 border border-gray-300 rounded text-sm text-gray-900 bg-white"
                 />
               ) : (
                 <p className="text-sm font-medium text-gray-900">{editedRecipe.servings}</p>
@@ -129,7 +129,7 @@ const ImportPreview: React.FC<ImportPreviewProps> = ({ recipe, onConfirm, onCanc
                   type="number"
                   value={editedRecipe.prepTime}
                   onChange={(e) => handleInputChange('prepTime', parseInt(e.target.value))}
-                  className="w-16 p-1 border border-gray-300 rounded text-sm"
+                  className="w-16 p-1 border border-gray-300 rounded text-sm text-gray-900 bg-white"
                 />
               ) : (
                 <p className="text-sm font-medium text-gray-900">{editedRecipe.prepTime}min</p>
@@ -146,7 +146,7 @@ const ImportPreview: React.FC<ImportPreviewProps> = ({ recipe, onConfirm, onCanc
                   type="number"
                   value={editedRecipe.cookTime}
                   onChange={(e) => handleInputChange('cookTime', parseInt(e.target.value))}
-                  className="w-16 p-1 border border-gray-300 rounded text-sm"
+                  className="w-16 p-1 border border-gray-300 rounded text-sm text-gray-900 bg-white"
                 />
               ) : (
                 <p className="text-sm font-medium text-gray-900">{editedRecipe.cookTime}min</p>
@@ -162,7 +162,7 @@ const ImportPreview: React.FC<ImportPreviewProps> = ({ recipe, onConfirm, onCanc
                 <select
                   value={editedRecipe.difficulty}
                   onChange={(e) => handleInputChange('difficulty', e.target.value)}
-                  className="w-full p-1 border border-gray-300 rounded text-sm"
+                  className="w-full p-1 border border-gray-300 rounded text-sm text-gray-900 bg-white"
                 >
                   <option value="easy">Easy</option>
                   <option value="medium">Medium</option>
@@ -188,21 +188,21 @@ const ImportPreview: React.FC<ImportPreviewProps> = ({ recipe, onConfirm, onCanc
                       type="text"
                       value={ingredient.quantity}
                       onChange={(e) => handleIngredientChange(index, 'quantity', e.target.value)}
-                      className="w-16 p-1 border border-gray-300 rounded text-sm"
+                      className="w-16 p-1 border border-gray-300 rounded text-sm text-gray-900 bg-white"
                       placeholder="Qty"
                     />
                     <input
                       type="text"
                       value={ingredient.unit}
                       onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)}
-                      className="w-20 p-1 border border-gray-300 rounded text-sm"
+                      className="w-20 p-1 border border-gray-300 rounded text-sm text-gray-900 bg-white"
                       placeholder="Unit"
                     />
                     <input
                       type="text"
                       value={ingredient.item}
                       onChange={(e) => handleIngredientChange(index, 'item', e.target.value)}
-                      className="flex-1 p-1 border border-gray-300 rounded text-sm"
+                      className="flex-1 p-1 border border-gray-300 rounded text-sm text-gray-900 bg-white"
                       placeholder="Ingredient"
                     />
                   </>
@@ -227,7 +227,7 @@ const ImportPreview: React.FC<ImportPreviewProps> = ({ recipe, onConfirm, onCanc
                   <textarea
                     value={direction.instruction}
                     onChange={(e) => handleDirectionChange(index, e.target.value)}
-                    className="flex-1 p-2 border border-gray-300 rounded text-sm resize-none"
+                    className="flex-1 p-2 border border-gray-300 rounded text-sm text-gray-900 bg-white resize-none"
                     rows={2}
                   />
                 ) : (

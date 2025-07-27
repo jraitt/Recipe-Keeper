@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Clock, Users, Star, ChefHat } from 'lucide-react';
+import { Clock, Users, Star, ChefHat, Eye, Lock } from 'lucide-react';
 import { Recipe } from '../../types';
 import { fixImageUrl } from '../../utils/imageUtils';
 
@@ -7,9 +7,10 @@ interface RecipeCardProps {
   recipe: Recipe;
   onDelete?: (id: string) => void;
   onEdit?: (id: string) => void;
+  showActions?: boolean;
 }
 
-export const RecipeCard = ({ recipe, onDelete, onEdit }: RecipeCardProps) => {
+export const RecipeCard = ({ recipe, onDelete, onEdit, showActions = true }: RecipeCardProps) => {
   const totalTime = (recipe.prepTime || 0) + (recipe.cookTime || 0);
 
   const handleDelete = (e: React.MouseEvent) => {
@@ -104,6 +105,21 @@ export const RecipeCard = ({ recipe, onDelete, onEdit }: RecipeCardProps) => {
             </div>
           )}
 
+          {/* Visibility Badge */}
+          <div className="flex items-center mb-2">
+            {recipe.visibility === 'public' ? (
+              <div className="flex items-center text-green-600 text-xs">
+                <Eye className="w-3 h-3 mr-1" />
+                <span>Public</span>
+              </div>
+            ) : (
+              <div className="flex items-center text-gray-500 text-xs">
+                <Lock className="w-3 h-3 mr-1" />
+                <span>Private</span>
+              </div>
+            )}
+          </div>
+
           {/* Ingredients Preview */}
           <p className="text-sm text-gray-600 line-clamp-2">
             {recipe.ingredients.slice(0, 3).map(ing => ing.item).join(', ')}
@@ -113,7 +129,7 @@ export const RecipeCard = ({ recipe, onDelete, onEdit }: RecipeCardProps) => {
       </Link>
 
       {/* Action Buttons */}
-      {(onEdit || onDelete) && (
+      {showActions && (onEdit || onDelete) && (
         <div className="border-t bg-gray-50 px-4 py-3 flex justify-end space-x-2">
           {onEdit && (
             <button

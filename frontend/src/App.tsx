@@ -3,6 +3,7 @@ import { Layout } from './components/common/Layout';
 import { ToastProvider } from './components/common/Toast';
 import { HomePage } from './pages/HomePage';
 import { RecipesPage } from './pages/RecipesPage';
+import { PublicRecipesPage } from './pages/PublicRecipesPage';
 import { RecipeDetailPage } from './pages/RecipeDetailPage';
 import { RecipeCreationHub } from './pages/RecipeCreationHub';
 import { CreateRecipePage } from './pages/CreateRecipePage';
@@ -18,6 +19,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/recipes" element={<RecipesPage />} />
+            <Route path="/recipes/public" element={<PublicRecipesPage />} />
             <Route path="/recipes/new" element={<RecipeCreationHub />} />
             <Route path="/recipes/create/manual" element={<CreateRecipePage />} />
             <Route path="/recipes/create/url" element={<CreateRecipePage />} />

@@ -6,8 +6,7 @@ import { RecipeCard } from '../components/recipe/RecipeCard';
 import { fixImageUrl } from '../utils/imageUtils';
 import { 
   Plus, 
-  Camera, 
-  Link2, 
+  Camera,
   Shuffle, 
   TrendingUp, 
   Clock, 
@@ -158,7 +157,7 @@ export const HomePage = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 gap-4 mb-8">
           <Link 
             to="/recipes/new"
             className="bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 transition-colors flex flex-col items-center space-y-2"
@@ -167,29 +166,13 @@ export const HomePage = () => {
             <span className="text-sm font-medium">Add Recipe</span>
           </Link>
           
-          <Link 
-            to="/recipes/create/photo-dish"
-            className="bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 transition-colors flex flex-col items-center space-y-2"
-          >
-            <Camera className="w-6 h-6" />
-            <span className="text-sm font-medium">From Photo</span>
-          </Link>
-          
-          <Link 
-            to="/recipes/create/url"
-            className="bg-purple-600 text-white p-4 rounded-lg hover:bg-purple-700 transition-colors flex flex-col items-center space-y-2"
-          >
-            <Link2 className="w-6 h-6" />
-            <span className="text-sm font-medium">From URL</span>
-          </Link>
-          
           <button 
             onClick={handleRandomRecipe}
             disabled={recipes.length === 0}
             className="bg-orange-600 text-white p-4 rounded-lg hover:bg-orange-700 transition-colors flex flex-col items-center space-y-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Shuffle className="w-6 h-6" />
-            <span className="text-sm font-medium">Random</span>
+            <span className="text-sm font-medium">Random Recipe</span>
           </button>
         </div>
 

@@ -68,7 +68,7 @@ export const IngredientInput = ({ ingredients, onChange, error }: IngredientInpu
                 placeholder="Amount"
                 value={ingredient.quantity}
                 onChange={(e) => updateIngredient(index, 'quantity', e.target.value)}
-                className="w-20 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-20 px-2 py-1 border border-gray-300 rounded text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               
               <input
@@ -77,7 +77,7 @@ export const IngredientInput = ({ ingredients, onChange, error }: IngredientInpu
                 value={ingredient.unit}
                 onChange={(e) => updateIngredient(index, 'unit', e.target.value)}
                 list="units"
-                className="w-24 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-24 px-2 py-1 border border-gray-300 rounded text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               
               <input
@@ -85,7 +85,7 @@ export const IngredientInput = ({ ingredients, onChange, error }: IngredientInpu
                 placeholder="Ingredient"
                 value={ingredient.item}
                 onChange={(e) => updateIngredient(index, 'item', e.target.value)}
-                className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               
               <button
@@ -109,7 +109,7 @@ export const IngredientInput = ({ ingredients, onChange, error }: IngredientInpu
           value={newIngredient.quantity}
           onChange={(e) => setNewIngredient({ ...newIngredient, quantity: e.target.value })}
           onKeyPress={handleKeyPress}
-          className="w-20 px-2 py-1 border-0 focus:ring-0 focus:outline-none text-sm"
+          className="w-20 px-2 py-1 border-0 focus:ring-0 focus:outline-none text-sm text-gray-900"
         />
         
         <input
@@ -119,7 +119,7 @@ export const IngredientInput = ({ ingredients, onChange, error }: IngredientInpu
           onChange={(e) => setNewIngredient({ ...newIngredient, unit: e.target.value })}
           onKeyPress={handleKeyPress}
           list="units"
-          className="w-24 px-2 py-1 border-0 focus:ring-0 focus:outline-none text-sm"
+          className="w-24 px-2 py-1 border-0 focus:ring-0 focus:outline-none text-sm text-gray-900"
         />
         
         <input
@@ -128,7 +128,7 @@ export const IngredientInput = ({ ingredients, onChange, error }: IngredientInpu
           value={newIngredient.item}
           onChange={(e) => setNewIngredient({ ...newIngredient, item: e.target.value })}
           onKeyPress={handleKeyPress}
-          className="flex-1 px-2 py-1 border-0 focus:ring-0 focus:outline-none text-sm"
+          className="flex-1 px-2 py-1 border-0 focus:ring-0 focus:outline-none text-sm text-gray-900"
         />
         
         <button

@@ -53,9 +53,16 @@ export const Layout = ({ children }: LayoutProps) => {
                   <Link 
                     to="/recipes" 
                     className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    aria-label="View recipes"
+                    aria-label="View my recipes"
                   >
-                    Recipes
+                    My Recipes
+                  </Link>
+                  <Link 
+                    to="/recipes/public" 
+                    className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="View community recipes"
+                  >
+                    Community Recipes
                   </Link>
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center space-x-1 text-sm text-gray-700">
@@ -119,9 +126,17 @@ export const Layout = ({ children }: LayoutProps) => {
                   to="/recipes"
                   onClick={closeMobileMenu}
                   className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md text-sm font-medium transition-colors duration-200"
-                  aria-label="View recipes"
+                  aria-label="View my recipes"
                 >
-                  Recipes
+                  My Recipes
+                </Link>
+                <Link
+                  to="/recipes/public"
+                  onClick={closeMobileMenu}
+                  className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md text-sm font-medium transition-colors duration-200"
+                  aria-label="View community recipes"
+                >
+                  Community Recipes
                 </Link>
                 <button
                   onClick={handleLogout}

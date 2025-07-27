@@ -7,9 +7,10 @@ interface RecipeGridProps {
   isLoading?: boolean;
   onDelete?: (id: string) => void;
   onEdit?: (id: string) => void;
+  showActions?: boolean;
 }
 
-export const RecipeGrid = ({ recipes, isLoading, onDelete, onEdit }: RecipeGridProps) => {
+export const RecipeGrid = ({ recipes, isLoading, onDelete, onEdit, showActions = true }: RecipeGridProps) => {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -62,6 +63,7 @@ export const RecipeGrid = ({ recipes, isLoading, onDelete, onEdit }: RecipeGridP
           recipe={recipe}
           onDelete={onDelete}
           onEdit={onEdit}
+          showActions={showActions}
         />
       ))}
     </div>
