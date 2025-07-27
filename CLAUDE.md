@@ -106,6 +106,25 @@ GEMINI_API_KEY=your_api_key_here
 - **Multi-Photo Support**: Intelligent merging of multiple recipe card photos
 - **Upload System**: Multer with Sharp preprocessing for optimal AI analysis
 
+## Database Migration Workflow
+
+### Development Environment
+When you modify `schema.prisma`:
+```bash
+# Create and apply migration
+npx prisma migrate dev --name describe_your_change
+
+# This creates a migration file in prisma/migrations/
+# and applies it to your development database
+```
+
+### Production Environment
+After pulling code with schema changes:
+```bash
+# Apply pending migrations
+docker compose exec backend npx prisma migrate deploy
+```
+
 ## Quick Reference
 
 ### Start Project

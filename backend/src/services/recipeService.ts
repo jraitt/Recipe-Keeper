@@ -79,12 +79,12 @@ export class RecipeService {
 
       // Filter recipes by search term (title, ingredients, or tags)
       const searchLower = search.toLowerCase();
-      const filteredRecipes = allRecipes.filter(recipe => {
+      const filteredRecipes = allRecipes.filter((recipe: any) => {
         // Search in title
         if (recipe.title.toLowerCase().includes(searchLower)) return true;
         
         // Search in tags
-        if (recipe.tags.some(tag => tag.toLowerCase().includes(searchLower))) return true;
+        if (recipe.tags.some((tag: string) => tag.toLowerCase().includes(searchLower))) return true;
         
         // Search in ingredients
         if (Array.isArray(recipe.ingredients)) {
@@ -154,9 +154,9 @@ export class RecipeService {
       });
 
       // Filter recipes that have matching tags (case-insensitive)
-      const filteredRecipes = allRecipes.filter(recipe => 
+      const filteredRecipes = allRecipes.filter((recipe: any) => 
         tags.some(tag => 
-          recipe.tags.some(recipeTag => 
+          recipe.tags.some((recipeTag: string) => 
             recipeTag.toLowerCase() === tag.toLowerCase()
           )
         )
@@ -394,12 +394,12 @@ export class RecipeService {
 
       // Filter recipes by search term (title, ingredients, or tags)
       const searchLower = search.toLowerCase();
-      const filteredRecipes = allRecipes.filter(recipe => {
+      const filteredRecipes = allRecipes.filter((recipe: any) => {
         // Search in title
         if (recipe.title.toLowerCase().includes(searchLower)) return true;
         
         // Search in tags
-        if (recipe.tags.some(tag => tag.toLowerCase().includes(searchLower))) return true;
+        if (recipe.tags.some((tag: string) => tag.toLowerCase().includes(searchLower))) return true;
         
         // Search in ingredients
         if (Array.isArray(recipe.ingredients)) {
