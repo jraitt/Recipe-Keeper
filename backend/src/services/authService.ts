@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../utils/database';
 import { logger } from '../utils/logger';
-import { RegisterRequest, LoginRequest, AuthResponse } from '../types/auth';
+import { RegisterRequest, LoginRequest, AuthResponse, ChangePasswordRequest } from '../types/auth';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-change-in-production';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
@@ -133,5 +133,41 @@ export class AuthService {
         name: true,
       }
     });
+  }
+
+  /**
+   * Change user password
+   */
+  static async changePassword(userId: string, passwordData: ChangePasswordRequest): Promise<void> {
+    const { currentPassword, newPassword } = passwordData;
+
+    // Get user with password
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+
+    if (!isCurrentPasswordValid) {
+      throw new Error('Current password is incorrect');
+    }
+
+    // Hash new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 12);
+
+    // Update password
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        password: hashedNewPassword,
+      }
+    });
+
+    logger.info(`Password changed successfully for user: ${user.email}`);
   }
 }

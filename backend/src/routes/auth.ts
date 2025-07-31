@@ -32,4 +32,11 @@ router.get('/profile', authenticateToken, AuthController.getProfile);
  */
 router.post('/logout', AuthController.logout);
 
+/**
+ * @route PUT /api/auth/change-password
+ * @desc Change user password
+ * @access Private
+ */
+router.put('/change-password', authenticateToken, AuthController.changePassword);
+
 export default router;

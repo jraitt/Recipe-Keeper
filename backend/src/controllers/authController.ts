@@ -15,6 +15,11 @@ const loginSchema = Joi.object({
   password: Joi.string().required(),
 });
 
+const changePasswordSchema = Joi.object({
+  currentPassword: Joi.string().required(),
+  newPassword: Joi.string().min(6).required(),
+});
+
 export class AuthController {
   /**
    * Register a new user
@@ -124,5 +129,56 @@ export class AuthController {
       success: true,
       message: 'Logged out successfully'
     });
+  }
+
+  /**
+   * Change user password
+   */
+  static async changePassword(req: Request, res: Response): Promise<Response> {
+    try {
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          error: { message: 'User not authenticated' }
+        });
+      }
+
+      // Validate request body
+      const { error, value } = changePasswordSchema.validate(req.body);
+      if (error) {
+        return res.status(400).json({
+          success: false,
+          error: { message: error.details[0].message }
+        });
+      }
+
+      await AuthService.changePassword(req.user.id, value);
+
+      return res.json({
+        success: true,
+        message: 'Password changed successfully'
+      });
+    } catch (error: any) {
+      logger.error('Change password error:', error);
+
+      if (error.message.includes('Current password is incorrect')) {
+        return res.status(400).json({
+          success: false,
+          error: { message: 'Current password is incorrect' }
+        });
+      }
+
+      if (error.message.includes('User not found')) {
+        return res.status(404).json({
+          success: false,
+          error: { message: 'User not found' }
+        });
+      }
+
+      return res.status(500).json({
+        success: false,
+        error: { message: 'Internal server error during password change' }
+      });
+    }
   }
 }

@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { Menu, X, ChefHat, User, LogOut } from 'lucide-react';
+import { Menu, X, ChefHat, User, LogOut, Settings } from 'lucide-react';
 
 interface LayoutProps {
   children: ReactNode;
@@ -69,6 +69,14 @@ export const Layout = ({ children }: LayoutProps) => {
                       <User className="h-4 w-4" />
                       <span>Welcome, {user?.name}</span>
                     </div>
+                    <Link
+                      to="/profile"
+                      className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      aria-label="Profile settings"
+                    >
+                      <Settings className="h-4 w-4" />
+                      <span>Profile</span>
+                    </Link>
                     <button
                       onClick={handleLogout}
                       className="flex items-center space-x-1 text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -137,6 +145,15 @@ export const Layout = ({ children }: LayoutProps) => {
                   aria-label="View community recipes"
                 >
                   Community Recipes
+                </Link>
+                <Link
+                  to="/profile"
+                  onClick={closeMobileMenu}
+                  className="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md text-sm font-medium transition-colors duration-200"
+                  aria-label="Profile settings"
+                >
+                  <Settings className="h-4 w-4" />
+                  <span>Profile</span>
                 </Link>
                 <button
                   onClick={handleLogout}
