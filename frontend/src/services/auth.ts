@@ -31,6 +31,11 @@ export interface User {
   createdAt: string;
 }
 
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export const authService = {
   // Register new user
   async register(data: RegisterRequest): Promise<AuthResponse> {
@@ -72,5 +77,11 @@ export const authService = {
     const token = this.getToken();
     const user = this.getUser();
     return !!(token && user);
+  },
+
+  // Change password
+  async changePassword(data: ChangePasswordRequest): Promise<{ success: boolean; message: string }> {
+    const response = await api.put('/auth/change-password', data);
+    return response.data;
   },
 };

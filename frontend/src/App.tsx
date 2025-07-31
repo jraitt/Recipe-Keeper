@@ -10,6 +10,7 @@ import { CreateRecipePage } from './pages/CreateRecipePage';
 import { EditRecipePage } from './pages/EditRecipePage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
+import { ProfilePage } from './pages/ProfilePage';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path="/recipes/:id/edit" element={<EditRecipePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Routes>
         </Layout>
       </Router>

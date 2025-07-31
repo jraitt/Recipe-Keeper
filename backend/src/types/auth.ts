@@ -28,6 +28,11 @@ export interface JwtPayload {
   exp: number;
 }
 
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface AuthenticatedRequest extends Request {
   user?: {
     id: string;
