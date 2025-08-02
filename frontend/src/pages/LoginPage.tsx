@@ -86,6 +86,15 @@ export const LoginPage = () => {
           )}
         </div>
         
+        <div className="flex justify-end">
+          <Link
+            to="/forgot-password"
+            className="text-sm text-blue-600 hover:text-blue-500"
+          >
+            Forgot your password?
+          </Link>
+        </div>
+        
         <button
           type="submit"
           disabled={isLoading}

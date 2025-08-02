@@ -18,6 +18,15 @@ export interface RegisterForm {
   confirmPassword: string;
 }
 
+export interface ForgotPasswordForm {
+  email: string;
+}
+
+export interface ResetPasswordForm {
+  newPassword: string;
+  confirmPassword: string;
+}
+
 // API Response types
 export interface ApiResponse<T = any> {
   success: boolean;

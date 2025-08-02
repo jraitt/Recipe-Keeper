@@ -20,6 +20,15 @@ const changePasswordSchema = Joi.object({
   newPassword: Joi.string().min(6).required(),
 });
 
+const passwordResetRequestSchema = Joi.object({
+  email: Joi.string().email().required(),
+});
+
+const resetPasswordSchema = Joi.object({
+  token: Joi.string().required(),
+  newPassword: Joi.string().min(6).required(),
+});
+
 export class AuthController {
   /**
    * Register a new user
@@ -178,6 +187,101 @@ export class AuthController {
       return res.status(500).json({
         success: false,
         error: { message: 'Internal server error during password change' }
+      });
+    }
+  }
+
+  /**
+   * Request password reset
+   */
+  static async requestPasswordReset(req: Request, res: Response): Promise<Response> {
+    try {
+      // Validate request body
+      const { error, value } = passwordResetRequestSchema.validate(req.body);
+      if (error) {
+        return res.status(400).json({
+          success: false,
+          error: { message: error.details[0].message }
+        });
+      }
+
+      const result = await AuthService.requestPasswordReset(value.email);
+
+      return res.json({
+        success: true,
+        message: result.message
+      });
+    } catch (error: any) {
+      logger.error('Password reset request error:', error);
+      return res.status(500).json({
+        success: false,
+        error: { message: 'Internal server error during password reset request' }
+      });
+    }
+  }
+
+  /**
+   * Reset password using token
+   */
+  static async resetPassword(req: Request, res: Response): Promise<Response> {
+    try {
+      // Validate request body
+      const { error, value } = resetPasswordSchema.validate(req.body);
+      if (error) {
+        return res.status(400).json({
+          success: false,
+          error: { message: error.details[0].message }
+        });
+      }
+
+      const result = await AuthService.resetPassword(value.token, value.newPassword);
+
+      return res.json({
+        success: true,
+        message: result.message
+      });
+    } catch (error: any) {
+      logger.error('Password reset error:', error);
+
+      if (error.message.includes('Invalid or expired')) {
+        return res.status(400).json({
+          success: false,
+          error: { message: 'Invalid or expired password reset token' }
+        });
+      }
+
+      return res.status(500).json({
+        success: false,
+        error: { message: 'Internal server error during password reset' }
+      });
+    }
+  }
+
+  /**
+   * Verify password reset token
+   */
+  static async verifyPasswordResetToken(req: Request, res: Response): Promise<Response> {
+    try {
+      const token = req.params.token;
+      
+      if (!token) {
+        return res.status(400).json({
+          success: false,
+          error: { message: 'Token is required' }
+        });
+      }
+
+      const result = await AuthService.verifyPasswordResetToken(token);
+
+      return res.json({
+        success: true,
+        data: result
+      });
+    } catch (error: any) {
+      logger.error('Token verification error:', error);
+      return res.status(500).json({
+        success: false,
+        error: { message: 'Internal server error during token verification' }
       });
     }
   }

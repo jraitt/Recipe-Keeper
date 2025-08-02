@@ -36,6 +36,15 @@ export interface ChangePasswordRequest {
   newPassword: string;
 }
 
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}
+
 export const authService = {
   // Register new user
   async register(data: RegisterRequest): Promise<AuthResponse> {
@@ -82,6 +91,24 @@ export const authService = {
   // Change password
   async changePassword(data: ChangePasswordRequest): Promise<{ success: boolean; message: string }> {
     const response = await api.put('/auth/change-password', data);
+    return response.data;
+  },
+
+  // Request password reset
+  async forgotPassword(data: ForgotPasswordRequest): Promise<{ success: boolean; message: string }> {
+    const response = await api.post('/auth/forgot-password', data);
+    return response.data;
+  },
+
+  // Reset password
+  async resetPassword(data: ResetPasswordRequest): Promise<{ success: boolean; message: string }> {
+    const response = await api.post('/auth/reset-password', data);
+    return response.data;
+  },
+
+  // Verify reset token
+  async verifyResetToken(token: string): Promise<{ success: boolean; data: { valid: boolean; email?: string } }> {
+    const response = await api.get(`/auth/verify-reset-token/${token}`);
     return response.data;
   },
 };
