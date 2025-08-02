@@ -33,6 +33,15 @@ export interface ChangePasswordRequest {
   newPassword: string;
 }
 
+export interface PasswordResetRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}
+
 export interface AuthenticatedRequest extends Request {
   user?: {
     id: string;

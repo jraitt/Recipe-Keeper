@@ -10,6 +10,8 @@ import { CreateRecipePage } from './pages/CreateRecipePage';
 import { EditRecipePage } from './pages/EditRecipePage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
+import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { ProfilePage } from './pages/ProfilePage';
 
 function App() {
@@ -30,6 +32,8 @@ function App() {
             <Route path="/recipes/:id/edit" element={<EditRecipePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Routes>
         </Layout>

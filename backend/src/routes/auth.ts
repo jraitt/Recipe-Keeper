@@ -39,4 +39,25 @@ router.post('/logout', AuthController.logout);
  */
 router.put('/change-password', authenticateToken, AuthController.changePassword);
 
+/**
+ * @route POST /api/auth/forgot-password
+ * @desc Request password reset
+ * @access Public
+ */
+router.post('/forgot-password', AuthController.requestPasswordReset);
+
+/**
+ * @route POST /api/auth/reset-password
+ * @desc Reset password using token
+ * @access Public
+ */
+router.post('/reset-password', AuthController.resetPassword);
+
+/**
+ * @route GET /api/auth/verify-reset-token/:token
+ * @desc Verify password reset token
+ * @access Public
+ */
+router.get('/verify-reset-token/:token', AuthController.verifyPasswordResetToken);
+
 export default router;
