@@ -218,7 +218,12 @@ export class RecipeService {
     const recipe = await prisma.recipe.findFirst({
       where: {
         id: recipeId,
-        userId,
+        OR: [
+          // User can view their own recipes
+          { userId },
+          // User can view public recipes from others
+          { visibility: 'public' }
+        ],
         deletedAt: null,
       },
       include: {
