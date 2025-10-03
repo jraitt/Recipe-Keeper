@@ -43,12 +43,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         });
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.error || 'Login failed';
-      set({ 
-        error: errorMessage, 
+      const errorMessage = error.response?.data?.error?.message || error.response?.data?.message || 'Login failed';
+      set({
+        error: errorMessage,
         isLoading: false,
         isAuthenticated: false,
-        user: null 
+        user: null
       });
       throw error;
     }
@@ -56,32 +56,32 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   register: async (data: RegisterRequest) => {
     set({ isLoading: true, error: null });
-    
+
     try {
       const response = await authService.register(data);
-      
+
       if (response.success) {
         const { user, token } = response.data;
-        
+
         // Store in localStorage
         localStorage.setItem('authToken', token);
         localStorage.setItem('user', JSON.stringify(user));
-        
+
         // Update state
-        set({ 
-          user, 
-          isAuthenticated: true, 
+        set({
+          user,
+          isAuthenticated: true,
           isLoading: false,
-          error: null 
+          error: null
         });
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.error || 'Registration failed';
-      set({ 
-        error: errorMessage, 
+      const errorMessage = error.response?.data?.error?.message || error.response?.data?.message || 'Registration failed';
+      set({
+        error: errorMessage,
         isLoading: false,
         isAuthenticated: false,
-        user: null 
+        user: null
       });
       throw error;
     }
