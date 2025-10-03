@@ -19,7 +19,7 @@ type ChangePasswordForm = z.infer<typeof changePasswordSchema>;
 
 export const ProfilePage = () => {
   const { user } = useAuthStore();
-  const { showToast } = useToast();
+  const { addToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -42,11 +42,11 @@ export const ProfilePage = () => {
         newPassword: data.newPassword,
       });
       
-      showToast('Password changed successfully!', 'success');
+      addToast({ title: 'Password changed successfully!', type: 'success' });
       reset();
     } catch (error: any) {
       const errorMessage = error.response?.data?.error?.message || 'Failed to change password';
-      showToast(errorMessage, 'error');
+      addToast({ title: errorMessage, type: 'error' });
     } finally {
       setIsLoading(false);
     }

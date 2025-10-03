@@ -10,6 +10,8 @@ declare global {
         id: string;
         email: string;
         name?: string;
+        role?: string;
+        passwordResetRequired?: boolean;
       };
     }
   }
@@ -70,10 +72,67 @@ export const optionalAuth = async (
         req.user = user;
       }
     }
-    
+
     next();
   } catch (error) {
     // Continue without authentication if token is invalid
     next();
   }
+};
+
+/**
+ * Middleware to require admin role
+ */
+export const requireAdmin = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  if (!req.user) {
+    res.status(401).json({
+      success: false,
+      error: { message: 'Authentication required' }
+    });
+    return;
+  }
+
+  if (req.user.role !== 'admin') {
+    res.status(403).json({
+      success: false,
+      error: { message: 'Admin access required' }
+    });
+    return;
+  }
+
+  next();
+};
+
+/**
+ * Middleware to check if password reset is required
+ */
+export const checkPasswordResetRequired = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  if (!req.user) {
+    res.status(401).json({
+      success: false,
+      error: { message: 'Authentication required' }
+    });
+    return;
+  }
+
+  if (req.user.passwordResetRequired) {
+    res.status(403).json({
+      success: false,
+      error: {
+        message: 'Password reset required',
+        passwordResetRequired: true
+      }
+    });
+    return;
+  }
+
+  next();
 };

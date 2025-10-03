@@ -105,6 +105,26 @@
 - [x] Build user profile page
 - [x] Add logout functionality
 - [x] Implement "Remember me" feature
+- [x] Fix password reset missing database table (2025-10-03)
+- [x] Implement admin password reset functionality (2025-10-03)
+  - Admin can reset any user's password and receive temporary password
+  - User is required to change password on next login
+  - Frontend: Admin users page with password reset button
+  - Backend: Admin-only endpoints for user management
+- [x] Add role-based access control (admin/user) (2025-10-03)
+  - Added 'role' field to User model (admin/user)
+  - Created requireAdmin middleware for protected endpoints
+  - Updated login response to include role and passwordResetRequired
+- [x] Create password reset requirement flag and middleware (2025-10-03)
+  - Added passwordResetRequired boolean to User model
+  - Created checkPasswordResetRequired middleware
+  - Applied to all recipe routes to force password change
+  - API interceptor redirects to /change-password when required
+- [x] Frontend admin password reset UI (2025-10-03)
+  - Admin users page at /admin/users
+  - Change password page with forced mode
+  - Admin navigation link (visible only to admins)
+  - Temporary password copy-to-clipboard modal
 
 #### Base UI Components
 - [x] Create Button component variants

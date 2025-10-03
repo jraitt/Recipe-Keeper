@@ -38,6 +38,8 @@ export class AuthService {
         id: true,
         email: true,
         name: true,
+        role: true,
+        passwordResetRequired: true,
       }
     });
 
@@ -105,6 +107,8 @@ export class AuthService {
         id: user.id,
         email: user.email,
         name: user.name,
+        role: user.role,
+        passwordResetRequired: user.passwordResetRequired,
       },
       token,
       refreshToken,
@@ -132,6 +136,54 @@ export class AuthService {
         id: true,
         email: true,
         name: true,
+        role: true,
+        passwordResetRequired: true,
+      }
+    });
+  }
+
+  /**
+   * Admin: Reset user password
+   */
+  static async adminResetUserPassword(userId: string): Promise<{ message: string; temporaryPassword: string }> {
+    // Generate a simple temporary password
+    const temporaryPassword = crypto.randomBytes(8).toString('hex');
+
+    // Hash the temporary password
+    const hashedPassword = await bcrypt.hash(temporaryPassword, 12);
+
+    // Update user password and require reset on next login
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        password: hashedPassword,
+        passwordResetRequired: true,
+      }
+    });
+
+    logger.info(`Admin reset password for user ID: ${userId}`);
+
+    return {
+      message: 'Password has been reset successfully',
+      temporaryPassword
+    };
+  }
+
+  /**
+   * Get all users (Admin only)
+   */
+  static async getAllUsers() {
+    return await prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        passwordResetRequired: true,
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: 'desc'
       }
     });
   }
@@ -161,11 +213,12 @@ export class AuthService {
     // Hash new password
     const hashedNewPassword = await bcrypt.hash(newPassword, 12);
 
-    // Update password
+    // Update password and clear password reset requirement
     await prisma.user.update({
       where: { id: userId },
       data: {
         password: hashedNewPassword,
+        passwordResetRequired: false,
       }
     });
 
@@ -209,10 +262,10 @@ export class AuthService {
       }
     });
 
-    // TODO: Send email with reset link
-    // For now, just log the token (in production, this should be sent via email)
+    // Note: Email functionality not implemented
+    // Admin must manually provide the reset token to users
     logger.info(`Password reset token generated for ${email}: ${token}`);
-    
+
     return { message: 'If the email exists, a password reset link has been sent.' };
   }
 

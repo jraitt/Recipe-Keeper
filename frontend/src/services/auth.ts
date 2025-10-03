@@ -28,6 +28,8 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  role?: string;
+  passwordResetRequired?: boolean;
   createdAt: string;
 }
 
@@ -110,5 +112,23 @@ export const authService = {
   async verifyResetToken(token: string): Promise<{ success: boolean; data: { valid: boolean; email?: string } }> {
     const response = await api.get(`/auth/verify-reset-token/${token}`);
     return response.data;
+  },
+
+  // Admin: Get all users
+  async adminGetAllUsers(): Promise<{ success: boolean; data: { users: User[] } }> {
+    const response = await api.get('/auth/admin/users');
+    return response.data;
+  },
+
+  // Admin: Reset user password
+  async adminResetUserPassword(userId: string): Promise<{ success: boolean; data: { message: string; temporaryPassword: string } }> {
+    const response = await api.post(`/auth/admin/users/${userId}/reset-password`);
+    return response.data;
+  },
+
+  // Check if user is admin
+  isAdmin(): boolean {
+    const user = this.getUser();
+    return user?.role === 'admin';
   },
 };

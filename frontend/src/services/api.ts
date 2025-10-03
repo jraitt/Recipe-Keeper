@@ -53,6 +53,9 @@ api.interceptors.response.use(
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
       window.location.href = '/login';
+    } else if (error.response?.status === 403 && error.response?.data?.error?.passwordResetRequired) {
+      // Password reset required - redirect to change password page
+      window.location.href = '/change-password?required=true';
     }
     return Promise.reject(error);
   }

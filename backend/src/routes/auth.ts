@@ -1,6 +1,6 @@
 import express from 'express';
 import { AuthController } from '../controllers/authController';
-import { authenticateToken } from '../middleware/auth';
+import { authenticateToken, requireAdmin } from '../middleware/auth';
 
 const router = express.Router();
 
@@ -59,5 +59,19 @@ router.post('/reset-password', AuthController.resetPassword);
  * @access Public
  */
 router.get('/verify-reset-token/:token', AuthController.verifyPasswordResetToken);
+
+/**
+ * @route GET /api/auth/admin/users
+ * @desc Get all users (Admin only)
+ * @access Private (Admin)
+ */
+router.get('/admin/users', authenticateToken, requireAdmin, AuthController.getAllUsers);
+
+/**
+ * @route POST /api/auth/admin/users/:userId/reset-password
+ * @desc Admin reset user password
+ * @access Private (Admin)
+ */
+router.post('/admin/users/:userId/reset-password', authenticateToken, requireAdmin, AuthController.adminResetPassword);
 
 export default router;

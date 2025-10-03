@@ -16,6 +16,8 @@ export interface AuthResponse {
     id: string;
     email: string;
     name?: string;
+    role?: string;
+    passwordResetRequired?: boolean;
   };
   token: string;
   refreshToken: string;

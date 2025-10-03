@@ -1,7 +1,8 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { Menu, X, ChefHat, User, LogOut, Settings } from 'lucide-react';
+import { authService } from '../../services/auth';
+import { Menu, X, ChefHat, User, LogOut, Settings, Shield } from 'lucide-react';
 
 interface LayoutProps {
   children: ReactNode;
@@ -57,13 +58,23 @@ export const Layout = ({ children }: LayoutProps) => {
                   >
                     My Recipes
                   </Link>
-                  <Link 
-                    to="/recipes/public" 
+                  <Link
+                    to="/recipes/public"
                     className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     aria-label="View community recipes"
                   >
                     Community Recipes
                   </Link>
+                  {authService.isAdmin() && (
+                    <Link
+                      to="/admin/users"
+                      className="flex items-center space-x-1 text-purple-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      aria-label="Admin users management"
+                    >
+                      <Shield className="h-4 w-4" />
+                      <span>Admin</span>
+                    </Link>
+                  )}
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center space-x-1 text-sm text-gray-700">
                       <User className="h-4 w-4" />
@@ -146,6 +157,17 @@ export const Layout = ({ children }: LayoutProps) => {
                 >
                   Community Recipes
                 </Link>
+                {authService.isAdmin() && (
+                  <Link
+                    to="/admin/users"
+                    onClick={closeMobileMenu}
+                    className="flex items-center space-x-2 px-3 py-2 text-purple-700 hover:text-purple-600 hover:bg-gray-50 rounded-md text-sm font-medium transition-colors duration-200"
+                    aria-label="Admin users management"
+                  >
+                    <Shield className="h-4 w-4" />
+                    <span>Admin</span>
+                  </Link>
+                )}
                 <Link
                   to="/profile"
                   onClick={closeMobileMenu}

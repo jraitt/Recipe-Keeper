@@ -263,7 +263,7 @@ export class AuthController {
   static async verifyPasswordResetToken(req: Request, res: Response): Promise<Response> {
     try {
       const token = req.params.token;
-      
+
       if (!token) {
         return res.status(400).json({
           success: false,
@@ -282,6 +282,55 @@ export class AuthController {
       return res.status(500).json({
         success: false,
         error: { message: 'Internal server error during token verification' }
+      });
+    }
+  }
+
+  /**
+   * Admin: Get all users
+   */
+  static async getAllUsers(_req: Request, res: Response): Promise<Response> {
+    try {
+      const users = await AuthService.getAllUsers();
+
+      return res.json({
+        success: true,
+        data: { users }
+      });
+    } catch (error: any) {
+      logger.error('Get all users error:', error);
+      return res.status(500).json({
+        success: false,
+        error: { message: 'Internal server error' }
+      });
+    }
+  }
+
+  /**
+   * Admin: Reset user password
+   */
+  static async adminResetPassword(req: Request, res: Response): Promise<Response> {
+    try {
+      const { userId } = req.params;
+
+      if (!userId) {
+        return res.status(400).json({
+          success: false,
+          error: { message: 'User ID is required' }
+        });
+      }
+
+      const result = await AuthService.adminResetUserPassword(userId);
+
+      return res.json({
+        success: true,
+        data: result
+      });
+    } catch (error: any) {
+      logger.error('Admin password reset error:', error);
+      return res.status(500).json({
+        success: false,
+        error: { message: 'Internal server error during password reset' }
       });
     }
   }
