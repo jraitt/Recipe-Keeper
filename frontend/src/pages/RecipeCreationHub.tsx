@@ -34,19 +34,19 @@ export const RecipeCreationHub = () => {
 
   const creationMethods = [
     {
-      id: 'manual',
-      title: 'Manual Entry',
-      description: 'Fill out a form with recipe details',
-      icon: Edit3,
-      color: 'bg-blue-500',
-      hoverColor: 'hover:bg-blue-600',
-      textColor: 'text-blue-600',
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200',
-      path: '/recipes/create/manual',
-      features: ['Complete control', 'Add custom details', 'Perfect formatting'],
-      time: '5-10 min',
-      badge: null
+      id: 'recipe-card',
+      title: 'Recipe Card',
+      description: 'Photo of written recipe or cookbook',
+      icon: FileText,
+      color: 'bg-orange-500',
+      hoverColor: 'hover:bg-orange-600',
+      textColor: 'text-orange-600',
+      bgColor: 'bg-orange-50',
+      borderColor: 'border-orange-200',
+      path: '/recipes/create/recipe-card',
+      features: ['Text extraction', 'Multi-photo support', 'Accurate parsing'],
+      time: '1-2 min',
+      badge: { text: 'AI Powered', color: 'bg-orange-100 text-orange-700' }
     },
     {
       id: 'url',
@@ -79,19 +79,19 @@ export const RecipeCreationHub = () => {
       badge: { text: 'AI Powered', color: 'bg-purple-100 text-purple-700' }
     },
     {
-      id: 'recipe-card',
-      title: 'Recipe Card',
-      description: 'Photo of written recipe or cookbook',
-      icon: FileText,
-      color: 'bg-orange-500',
-      hoverColor: 'hover:bg-orange-600',
-      textColor: 'text-orange-600',
-      bgColor: 'bg-orange-50',
-      borderColor: 'border-orange-200',
-      path: '/recipes/create/recipe-card',
-      features: ['Text extraction', 'Multi-photo support', 'Accurate parsing'],
-      time: '1-2 min',
-      badge: { text: 'AI Powered', color: 'bg-orange-100 text-orange-700' }
+      id: 'manual',
+      title: 'Manual Entry',
+      description: 'Fill out a form with recipe details',
+      icon: Edit3,
+      color: 'bg-blue-500',
+      hoverColor: 'hover:bg-blue-600',
+      textColor: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+      borderColor: 'border-blue-200',
+      path: '/recipes/create/manual',
+      features: ['Complete control', 'Add custom details', 'Perfect formatting'],
+      time: '5-10 min',
+      badge: null
     }
   ];
 

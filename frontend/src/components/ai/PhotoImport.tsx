@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Upload, Camera, X, AlertCircle, CheckCircle, Plus } from 'lucide-react';
 
 interface PhotoImportProps {
@@ -13,6 +13,7 @@ const PhotoImport: React.FC<PhotoImportProps> = ({ onImport, onMultiImport, onCa
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -34,9 +35,9 @@ const PhotoImport: React.FC<PhotoImportProps> = ({ onImport, onMultiImport, onCa
     }
   };
 
-  const handleFileSelect = (files: File[]) => {
+  const handleFileSelect = (files: File[], append: boolean = false) => {
     setError(null);
-    
+
     // Validate files
     const validFiles = files.filter(file => {
       if (!file.type.startsWith('image/')) {
@@ -53,20 +54,25 @@ const PhotoImport: React.FC<PhotoImportProps> = ({ onImport, onMultiImport, onCa
       return;
     }
 
-    if (validFiles.length > 5) {
+    // If appending, combine with existing files
+    const combinedFiles = append ? [...selectedFiles, ...validFiles] : validFiles;
+
+    if (combinedFiles.length > 5) {
       setError('Maximum 5 images allowed');
       return;
     }
 
-    setSelectedFiles(validFiles);
-    
+    setSelectedFiles(combinedFiles);
+
     // Create previews
-    const newPreviews: string[] = [];
+    const startIndex = append ? selectedFiles.length : 0;
+    const newPreviews = append ? [...previews] : [];
+
     validFiles.forEach((file, index) => {
       const reader = new FileReader();
       reader.onload = (e) => {
-        newPreviews[index] = e.target?.result as string;
-        if (newPreviews.length === validFiles.length) {
+        newPreviews[startIndex + index] = e.target?.result as string;
+        if (newPreviews.length === combinedFiles.length) {
           setPreviews([...newPreviews]);
         }
       };
@@ -78,6 +84,24 @@ const PhotoImport: React.FC<PhotoImportProps> = ({ onImport, onMultiImport, onCa
     const files = Array.from(e.target.files || []);
     if (files.length > 0) {
       handleFileSelect(files);
+    }
+  };
+
+  const handleCameraCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      // Append camera captures to existing photos
+      handleFileSelect(files, true);
+    }
+    // Reset the input so the same photo can be captured again if needed
+    if (cameraInputRef.current) {
+      cameraInputRef.current.value = '';
+    }
+  };
+
+  const triggerCameraCapture = () => {
+    if (cameraInputRef.current) {
+      cameraInputRef.current.click();
     }
   };
 
@@ -136,31 +160,51 @@ const PhotoImport: React.FC<PhotoImportProps> = ({ onImport, onMultiImport, onCa
           <div className="flex flex-col items-center space-y-4">
             <Camera className="w-12 h-12 text-gray-400" />
             <div>
-              <p className="text-sm text-gray-600 mb-2">
-                Drag and drop photos here, or click to select
+              <p className="text-sm text-gray-600 mb-3">
+                Drag and drop photos here, or
               </p>
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleFileInput}
-                className="hidden"
-                id="photo-upload"
-                disabled={loading}
-              />
-              <label
-                htmlFor="photo-upload"
-                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
-              >
-                <Upload className="w-4 h-4 mr-2" />
-                Select Photos
-              </label>
+              <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleFileInput}
+                  className="hidden"
+                  id="photo-upload"
+                  disabled={loading}
+                />
+                <label
+                  htmlFor="photo-upload"
+                  className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Select from Gallery
+                </label>
+                <input
+                  ref={cameraInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleCameraCapture}
+                  className="hidden"
+                  id="camera-capture"
+                  disabled={loading}
+                />
+                <button
+                  onClick={triggerCameraCapture}
+                  className="inline-flex items-center justify-center px-4 py-2 border border-blue-500 rounded-md text-sm font-medium text-blue-600 bg-white hover:bg-blue-50"
+                  disabled={loading}
+                >
+                  <Camera className="w-4 h-4 mr-2" />
+                  Take Photo
+                </button>
+              </div>
             </div>
             <p className="text-xs text-gray-500">
               Supports JPG, PNG, WEBP up to 15MB each. Max 5 photos.
             </p>
             <p className="text-xs text-blue-600 font-medium">
-              💡 Perfect for front/back of recipe cards!
+              💡 Use "Take Photo" to capture front & back of recipe cards!
             </p>
           </div>
         </div>
@@ -178,7 +222,7 @@ const PhotoImport: React.FC<PhotoImportProps> = ({ onImport, onMultiImport, onCa
               Clear all
             </button>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-3">
             {previews.map((preview, index) => (
               <div key={index} className="relative">
@@ -194,10 +238,26 @@ const PhotoImport: React.FC<PhotoImportProps> = ({ onImport, onMultiImport, onCa
                 >
                   <X size={12} />
                 </button>
+                <div className="absolute bottom-1 left-1 bg-black bg-opacity-60 text-white text-xs px-2 py-0.5 rounded">
+                  {index === 0 ? 'Front' : index === 1 ? 'Back' : `Photo ${index + 1}`}
+                </div>
               </div>
             ))}
           </div>
-          
+
+          {selectedFiles.length < 5 && (
+            <div className="flex justify-center">
+              <button
+                onClick={triggerCameraCapture}
+                className="inline-flex items-center px-3 py-2 border border-blue-500 rounded-md text-sm font-medium text-blue-600 bg-white hover:bg-blue-50"
+                disabled={loading}
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add Another Photo
+              </button>
+            </div>
+          )}
+
           <div className="text-xs text-gray-500">
             {selectedFiles.map((file, index) => (
               <div key={index} className="flex justify-between">
