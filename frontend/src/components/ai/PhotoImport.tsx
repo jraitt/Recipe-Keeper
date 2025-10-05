@@ -93,10 +93,8 @@ const PhotoImport: React.FC<PhotoImportProps> = ({ onImport, onMultiImport, onCa
       // Append camera captures to existing photos
       handleFileSelect(files, true);
     }
-    // Reset the input so the same photo can be captured again if needed
-    if (cameraInputRef.current) {
-      cameraInputRef.current.value = '';
-    }
+    // Reset the input so it can be used again
+    e.target.value = '';
   };
 
   const triggerCameraCapture = () => {
@@ -245,16 +243,23 @@ const PhotoImport: React.FC<PhotoImportProps> = ({ onImport, onMultiImport, onCa
             ))}
           </div>
 
-          {selectedFiles.length < 5 && (
+          {selectedFiles.length < 5 && !loading && (
             <div className="flex justify-center">
-              <button
-                onClick={triggerCameraCapture}
-                className="inline-flex items-center px-3 py-2 border border-blue-500 rounded-md text-sm font-medium text-blue-600 bg-white hover:bg-blue-50"
-                disabled={loading}
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleCameraCapture}
+                className="hidden"
+                id="add-another-photo"
+              />
+              <label
+                htmlFor="add-another-photo"
+                className="inline-flex items-center px-3 py-2 border border-blue-500 rounded-md text-sm font-medium text-blue-600 bg-white hover:bg-blue-50 cursor-pointer"
               >
                 <Plus className="w-4 h-4 mr-1" />
                 Add Another Photo
-              </button>
+              </label>
             </div>
           )}
 
