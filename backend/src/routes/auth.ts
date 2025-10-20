@@ -74,4 +74,11 @@ router.get('/admin/users', authenticateToken, requireAdmin, AuthController.getAl
  */
 router.post('/admin/users/:userId/reset-password', authenticateToken, requireAdmin, AuthController.adminResetPassword);
 
+/**
+ * @route POST /api/auth/refresh-token
+ * @desc Refresh access token using refresh token
+ * @access Public (uses refresh token from body)
+ */
+router.post('/refresh-token', AuthController.refreshToken);
+
 export default router;

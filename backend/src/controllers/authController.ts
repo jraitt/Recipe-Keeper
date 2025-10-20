@@ -29,6 +29,10 @@ const resetPasswordSchema = Joi.object({
   newPassword: Joi.string().min(6).required(),
 });
 
+const refreshTokenSchema = Joi.object({
+  refreshToken: Joi.string().required(),
+});
+
 export class AuthController {
   /**
    * Register a new user
@@ -331,6 +335,43 @@ export class AuthController {
       return res.status(500).json({
         success: false,
         error: { message: 'Internal server error during password reset' }
+      });
+    }
+  }
+
+  /**
+   * Refresh access token
+   */
+  static async refreshToken(req: Request, res: Response): Promise<Response> {
+    try {
+      // Validate request body
+      const { error, value } = refreshTokenSchema.validate(req.body);
+      if (error) {
+        return res.status(400).json({
+          success: false,
+          error: { message: error.details[0].message }
+        });
+      }
+
+      const result = await AuthService.refreshAccessToken(value.refreshToken);
+
+      return res.json({
+        success: true,
+        data: result
+      });
+    } catch (error: any) {
+      logger.error('Refresh token error:', error);
+
+      if (error.message.includes('Invalid or expired')) {
+        return res.status(401).json({
+          success: false,
+          error: { message: 'Invalid or expired refresh token' }
+        });
+      }
+
+      return res.status(500).json({
+        success: false,
+        error: { message: 'Internal server error during token refresh' }
       });
     }
   }

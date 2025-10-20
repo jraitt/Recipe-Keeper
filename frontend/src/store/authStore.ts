@@ -23,23 +23,24 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   login: async (data: LoginRequest) => {
     set({ isLoading: true, error: null });
-    
+
     try {
       const response = await authService.login(data);
-      
+
       if (response.success) {
-        const { user, token } = response.data;
-        
+        const { user, token, refreshToken } = response.data;
+
         // Store in localStorage
         localStorage.setItem('authToken', token);
+        localStorage.setItem('refreshToken', refreshToken);
         localStorage.setItem('user', JSON.stringify(user));
-        
+
         // Update state
-        set({ 
-          user, 
-          isAuthenticated: true, 
+        set({
+          user,
+          isAuthenticated: true,
           isLoading: false,
-          error: null 
+          error: null
         });
       }
     } catch (error: any) {
@@ -61,10 +62,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const response = await authService.register(data);
 
       if (response.success) {
-        const { user, token } = response.data;
+        const { user, token, refreshToken } = response.data;
 
         // Store in localStorage
         localStorage.setItem('authToken', token);
+        localStorage.setItem('refreshToken', refreshToken);
         localStorage.setItem('user', JSON.stringify(user));
 
         // Update state
@@ -89,10 +91,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   logout: () => {
     authService.logout();
-    set({ 
-      user: null, 
-      isAuthenticated: false, 
-      error: null 
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    set({
+      user: null,
+      isAuthenticated: false,
+      error: null
     });
   },
 

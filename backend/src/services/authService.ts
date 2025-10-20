@@ -331,4 +331,59 @@ export class AuthService {
 
     return { valid: true, email: resetToken.email };
   }
+
+  /**
+   * Refresh access token using refresh token
+   */
+  static async refreshAccessToken(refreshToken: string): Promise<AuthResponse> {
+    try {
+      // Verify refresh token
+      const decoded = jwt.verify(refreshToken, JWT_SECRET) as any;
+
+      if (decoded.type !== 'refresh') {
+        throw new Error('Invalid token type');
+      }
+
+      // Get user
+      const user = await prisma.user.findUnique({
+        where: { id: decoded.userId },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          passwordResetRequired: true,
+        }
+      });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      // Generate new access token
+      const newAccessToken = jwt.sign(
+        { userId: user.id, email: user.email },
+        JWT_SECRET,
+        { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions
+      );
+
+      // Optionally generate new refresh token (token rotation for better security)
+      const newRefreshToken = jwt.sign(
+        { userId: user.id, type: 'refresh' },
+        JWT_SECRET,
+        { expiresIn: '30d' } as jwt.SignOptions
+      );
+
+      logger.info(`Token refreshed for user: ${user.email}`);
+
+      return {
+        user,
+        token: newAccessToken,
+        refreshToken: newRefreshToken,
+      };
+    } catch (error: any) {
+      logger.error('Token refresh error:', error);
+      throw new Error('Invalid or expired refresh token');
+    }
+  }
 }
