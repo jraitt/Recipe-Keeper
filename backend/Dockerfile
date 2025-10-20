@@ -1,5 +1,5 @@
 # Multi-stage dockerfile that works for both dev and production
-FROM node:20-alpine as base
+FROM node:20-alpine AS base
 
 # Install OpenSSL for Prisma
 RUN apk add --no-cache openssl
@@ -11,7 +11,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Development stage
-FROM base as development
+FROM base AS development
 RUN npm ci
 COPY . .
 RUN npx prisma generate
@@ -20,14 +20,14 @@ EXPOSE 3021
 CMD ["npm", "run", "dev"]
 
 # Production build stage
-FROM base as build
+FROM base AS build
 RUN npm ci
 COPY . .
 RUN npm run build
 RUN npx prisma generate
 
 # Production runtime stage
-FROM node:20-alpine as production
+FROM node:20-alpine AS production
 RUN apk add --no-cache openssl
 WORKDIR /app
 
@@ -52,4 +52,4 @@ EXPOSE 3021
 CMD ["node", "dist/server.js"]
 
 # Default to development if no target specified
-FROM development
+FROM development AS final
