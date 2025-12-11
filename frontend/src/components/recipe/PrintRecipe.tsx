@@ -1,6 +1,7 @@
 import React from 'react';
 import { Printer } from 'lucide-react';
 import { Recipe } from '../../types';
+import { parseQuantity, formatQuantity } from '../../utils/fractionUtils';
 
 interface PrintRecipeProps {
   recipe: Recipe;
@@ -36,12 +37,16 @@ export const PrintRecipe: React.FC<PrintRecipeProps> = ({
 };
 
 const generatePrintHTML = (recipe: Recipe, scale: number): string => {
-  const scaledIngredients = recipe.ingredients.map(ingredient => ({
-    ...ingredient,
-    quantity: ingredient.quantity 
-      ? (parseFloat(ingredient.quantity) * scale).toString()
-      : ingredient.quantity
-  }));
+  const scaledIngredients = recipe.ingredients.map(ingredient => {
+    const parsedQuantity = parseQuantity(ingredient.quantity);
+    const scaledValue = parsedQuantity * scale;
+    return {
+      ...ingredient,
+      quantity: ingredient.quantity
+        ? formatQuantity(scaledValue)
+        : ingredient.quantity
+    };
+  });
 
   const scaledServings = recipe.servings ? Math.round(recipe.servings * scale) : undefined;
 

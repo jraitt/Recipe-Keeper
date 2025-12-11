@@ -10,6 +10,7 @@ import { CookingTimer } from '../components/recipe/CookingTimer';
 import { Tooltip } from '../components/common/Tooltip';
 import { Loading } from '../components/common/Loading';
 import { fixImageUrl } from '../utils/imageUtils';
+import { parseQuantity, formatQuantity } from '../utils/fractionUtils';
 
 export const RecipeDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -253,8 +254,10 @@ export const RecipeDetailPage = () => {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Ingredients</h2>
             <ul className="space-y-2">
               {currentRecipe.ingredients.map((ingredient, index) => {
-                const scaledQuantity = ingredient.quantity 
-                  ? (parseFloat(ingredient.quantity) * scale).toFixed(2).replace(/\.?0+$/, '')
+                const parsedQuantity = parseQuantity(ingredient.quantity);
+                const scaledValue = parsedQuantity * scale;
+                const scaledQuantity = ingredient.quantity
+                  ? formatQuantity(scaledValue)
                   : ingredient.quantity;
                 return (
                   <li key={index} className="flex items-start">
