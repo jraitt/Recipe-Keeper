@@ -9,6 +9,7 @@ import { IngredientInput, Ingredient } from './IngredientInput';
 import { DirectionInput, Direction } from './DirectionInput';
 import { FileUpload } from '../common/FileUpload';
 import { uploadFile } from '../../services/upload';
+import { parseQuantity, formatQuantity } from '../../utils/fractionUtils';
 
 // Zod validation schema
 const recipeSchema = z.object({
@@ -93,6 +94,12 @@ export const RecipeForm = ({
   // Populate form if editing existing recipe
   useEffect(() => {
     if (recipe) {
+      // Convert ingredient quantities to fractions for editing
+      const ingredientsWithFractions = recipe.ingredients.map(ing => ({
+        ...ing,
+        quantity: ing.quantity ? formatQuantity(parseQuantity(ing.quantity)) : ing.quantity
+      }));
+
       reset({
         title: recipe.title,
         photoUrl: recipe.photoUrl,
@@ -101,7 +108,7 @@ export const RecipeForm = ({
         cookTime: recipe.cookTime || undefined,
         servings: recipe.servings || undefined,
         difficulty: recipe.difficulty as any || undefined,
-        ingredients: recipe.ingredients,
+        ingredients: ingredientsWithFractions,
         directions: recipe.directions,
         nutrition: recipe.nutrition || {},
         tags: recipe.tags || [],
