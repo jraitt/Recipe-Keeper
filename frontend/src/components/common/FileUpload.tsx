@@ -143,30 +143,36 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         />
 
         {displayUrl ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="text-sm font-medium text-gray-700">
               {selectedFile ? 'New Image Preview' : 'Current Recipe Image'}
             </div>
-            <div className="relative inline-block">
-              <img
-                src={displayUrl}
-                alt="Recipe preview"
-                className="max-h-[300px] max-w-full rounded-lg shadow-md object-contain mx-auto"
-                style={{ transform: `rotate(${rotation}deg)` }}
-              />
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleRemove();
-                }}
-                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
-                disabled={loading}
-              >
-                <X size={16} />
-              </button>
+
+            {/* Image container with proper overflow handling */}
+            <div className="flex justify-center items-center min-h-[320px] py-4">
+              <div className="relative inline-block">
+                <img
+                  src={displayUrl}
+                  alt="Recipe preview"
+                  className="max-h-[300px] max-w-full rounded-lg shadow-md object-contain"
+                  style={{ transform: `rotate(${rotation}deg)` }}
+                />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemove();
+                  }}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors z-10"
+                  disabled={loading}
+                >
+                  <X size={16} />
+                </button>
+              </div>
             </div>
-            <div className="flex gap-3 justify-center">
+
+            {/* Rotation controls - always visible below image */}
+            <div className="flex gap-3 justify-center pt-2">
               <button
                 type="button"
                 onClick={(e) => {
@@ -190,6 +196,22 @@ export const FileUpload: React.FC<FileUploadProps> = ({
               >
                 <RotateCw className="w-4 h-4" />
                 Rotate Right
+              </button>
+            </div>
+
+            {/* Change Image button */}
+            <div className="pt-2 border-t border-gray-200">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={loading}
+              >
+                <Upload className="w-4 h-4" />
+                Change Image
               </button>
             </div>
           </div>
