@@ -1,8 +1,9 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { Upload, X, Image as ImageIcon, RotateCcw, RotateCw } from 'lucide-react';
+import { fixImageUrl } from '../../utils/imageUtils';
 
 interface FileUploadProps {
-  onFileSelect: (file: File | null) => void;
+  onFileSelect: (file: File | null, rotation?: number) => void;
   currentUrl?: string;
   loading?: boolean;
   error?: string;
@@ -21,8 +22,17 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   className = ''
 }) => {
   const [dragOver, setDragOver] = useState(false);
-  const [preview, setPreview] = useState<string | null>(currentUrl || null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [rotation, setRotation] = useState(0); // 0, 90, 180, 270
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Update preview when currentUrl changes (for edit mode)
+  useEffect(() => {
+    if (currentUrl && !preview) {
+      setPreview(fixImageUrl(currentUrl));
+    }
+  }, [currentUrl, preview]);
 
   const handleFileSelect = useCallback((file: File | null) => {
     if (file) {
@@ -42,12 +52,14 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         setPreview(e.target?.result as string);
       };
       reader.readAsDataURL(file);
+      setSelectedFile(file);
     } else {
       setPreview(null);
+      setSelectedFile(null);
     }
 
-    onFileSelect(file);
-  }, [onFileSelect, maxSize]);
+    onFileSelect(file, rotation);
+  }, [onFileSelect, maxSize, rotation]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -78,15 +90,28 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
   const handleRemove = useCallback(() => {
     setPreview(null);
+    setRotation(0);
+    setSelectedFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-    handleFileSelect(null);
-  }, [handleFileSelect]);
+    onFileSelect(null, 0);
+  }, [onFileSelect]);
 
   const handleClick = useCallback(() => {
     fileInputRef.current?.click();
   }, []);
+
+  const rotateLeft = useCallback(() => {
+    setRotation((prev) => (prev - 90 + 360) % 360);
+  }, []);
+
+  const rotateRight = useCallback(() => {
+    setRotation((prev) => (prev + 90) % 360);
+  }, []);
+
+  // Determine which URL to display
+  const displayUrl = preview || (currentUrl ? fixImageUrl(currentUrl) : null);
 
   return (
     <div className={`space-y-4 ${className}`}>
@@ -110,24 +135,56 @@ export const FileUpload: React.FC<FileUploadProps> = ({
           disabled={loading}
         />
 
-        {preview ? (
-          <div className="relative">
-            <img
-              src={preview}
-              alt="Preview"
-              className="max-h-48 mx-auto rounded-lg shadow-md"
-            />
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleRemove();
-              }}
-              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
-              disabled={loading}
-            >
-              <X size={16} />
-            </button>
+        {displayUrl ? (
+          <div className="space-y-3">
+            <div className="text-sm font-medium text-gray-700">
+              {selectedFile ? 'New Image Preview' : 'Current Recipe Image'}
+            </div>
+            <div className="relative inline-block">
+              <img
+                src={displayUrl}
+                alt="Recipe preview"
+                className="max-h-[300px] max-w-full rounded-lg shadow-md object-contain mx-auto"
+                style={{ transform: `rotate(${rotation}deg)` }}
+              />
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRemove();
+                }}
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                disabled={loading}
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <div className="flex gap-2 justify-center">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  rotateLeft();
+                }}
+                className="flex items-center gap-1 px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                disabled={loading}
+              >
+                <RotateCcw className="w-4 h-4" />
+                Rotate Left
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  rotateRight();
+                }}
+                className="flex items-center gap-1 px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                disabled={loading}
+              >
+                <RotateCw className="w-4 h-4" />
+                Rotate Right
+              </button>
+            </div>
           </div>
         ) : (
           <div className="space-y-4">

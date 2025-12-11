@@ -10,6 +10,7 @@ import { DirectionInput, Direction } from './DirectionInput';
 import { FileUpload } from '../common/FileUpload';
 import { uploadFile } from '../../services/upload';
 import { parseQuantity, formatQuantity } from '../../utils/fractionUtils';
+import { rotateImage, fixImageUrl } from '../../utils/imageUtils';
 
 // Zod validation schema
 const recipeSchema = z.object({
@@ -143,7 +144,7 @@ export const RecipeForm = ({
     }
   };
 
-  const handleFileUpload = async (file: File | null) => {
+  const handleFileUpload = async (file: File | null, rotation: number = 0) => {
     if (!file) {
       setValue('photoUrl', '');
       return;
@@ -153,14 +154,25 @@ export const RecipeForm = ({
     setUploadError(null);
 
     try {
-      const result = await uploadFile(file);
-      
+      // If rotation is applied, rotate the image first
+      let fileToUpload = file;
+
+      if (rotation !== 0) {
+        const preview = URL.createObjectURL(file);
+        const rotatedBlob = await rotateImage(preview, rotation);
+        fileToUpload = new File([rotatedBlob], file.name, { type: 'image/jpeg' });
+        URL.revokeObjectURL(preview);
+      }
+
+      const result = await uploadFile(fileToUpload);
+
       if (result.success && result.data) {
         setValue('photoUrl', result.data.url);
       } else {
         setUploadError(result.error || 'Upload failed');
       }
     } catch (error) {
+      console.error('Upload error:', error);
       setUploadError('Upload failed. Please try again.');
     } finally {
       setUploading(false);
