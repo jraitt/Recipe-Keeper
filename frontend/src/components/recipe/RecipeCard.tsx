@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Clock, Users, Star, ChefHat, Eye, Lock } from 'lucide-react';
 import { Recipe } from '../../types';
 import { fixImageUrl } from '../../utils/imageUtils';
+import { parseQuantity, formatQuantity } from '../../utils/fractionUtils';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -122,7 +123,11 @@ export const RecipeCard = ({ recipe, onDelete, onEdit, showActions = true }: Rec
 
           {/* Ingredients Preview */}
           <p className="text-sm text-gray-600 line-clamp-2">
-            {recipe.ingredients.slice(0, 3).map(ing => ing.item).join(', ')}
+            {recipe.ingredients.slice(0, 3).map(ing => {
+              const quantity = ing.quantity ? formatQuantity(parseQuantity(ing.quantity)) : '';
+              const unit = ing.unit || '';
+              return [quantity, unit, ing.item].filter(Boolean).join(' ');
+            }).join(', ')}
             {recipe.ingredients.length > 3 && ', ...'}
           </p>
         </div>
