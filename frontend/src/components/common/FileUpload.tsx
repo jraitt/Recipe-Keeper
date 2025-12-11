@@ -144,11 +144,13 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
         {displayUrl ? (
           <div className="space-y-4">
-            {/* Image container with proper overflow handling - increased height and padding */}
-            <div className="flex flex-col items-center min-h-[400px] pt-8 pb-6 gap-4">
-              <div className="text-sm font-medium text-gray-700">
-                {selectedFile ? 'New Image Preview' : 'Current Recipe Image'}
-              </div>
+            {/* Text label - outside rotation area */}
+            <div className="text-sm font-medium text-gray-700 text-center">
+              {selectedFile ? 'New Image Preview' : 'Current Recipe Image'}
+            </div>
+
+            {/* Image container with proper overflow handling - rotation safe zone */}
+            <div className="flex justify-center items-center min-h-[400px] py-6">
               <div className="relative inline-block">
                 <img
                   src={displayUrl}
