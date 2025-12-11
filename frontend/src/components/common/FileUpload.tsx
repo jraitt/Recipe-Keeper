@@ -34,6 +34,13 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     }
   }, [currentUrl, preview]);
 
+  // Notify parent when rotation changes (for existing images or new uploads)
+  useEffect(() => {
+    if ((selectedFile || currentUrl) && rotation !== 0) {
+      onFileSelect(selectedFile, rotation);
+    }
+  }, [rotation]); // Only when rotation changes
+
   const handleFileSelect = useCallback((file: File | null) => {
     if (file) {
       // Validate file size
@@ -159,14 +166,14 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                 <X size={16} />
               </button>
             </div>
-            <div className="flex gap-2 justify-center">
+            <div className="flex gap-3 justify-center">
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   rotateLeft();
                 }}
-                className="flex items-center gap-1 px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={loading}
               >
                 <RotateCcw className="w-4 h-4" />
@@ -178,7 +185,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                   e.stopPropagation();
                   rotateRight();
                 }}
-                className="flex items-center gap-1 px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={loading}
               >
                 <RotateCw className="w-4 h-4" />
