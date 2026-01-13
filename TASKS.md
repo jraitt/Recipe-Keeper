@@ -106,6 +106,10 @@
 - [x] Add logout functionality
 - [x] Implement "Remember me" feature
 - [x] Fix password reset missing database table (2025-10-03)
+- [x] Fix production database missing password_reset_tokens table (2026-01-13)
+  - Created migration to add password_reset_tokens table
+  - Applied migration to production database
+  - Verified forgot password functionality working
 - [x] Implement admin password reset functionality (2025-10-03)
   - Admin can reset any user's password and receive temporary password
   - User is required to change password on next login

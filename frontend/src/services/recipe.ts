@@ -140,4 +140,24 @@ export const recipeService = {
     const response = await api.get<RecipeListResponse>(`/recipes/search/public?${searchParams}`);
     return response.data;
   },
+
+  // Admin: Get all recipes from all users
+  async adminGetAllRecipes(params?: {
+    page?: number;
+    limit?: number;
+    userId?: string;
+    visibility?: 'public' | 'private';
+    search?: string;
+  }): Promise<RecipeListResponse> {
+    const searchParams = new URLSearchParams();
+
+    if (params?.page) searchParams.append('page', params.page.toString());
+    if (params?.limit) searchParams.append('limit', params.limit.toString());
+    if (params?.userId) searchParams.append('userId', params.userId);
+    if (params?.visibility) searchParams.append('visibility', params.visibility);
+    if (params?.search) searchParams.append('search', params.search);
+
+    const response = await api.get<RecipeListResponse>(`/recipes/admin/all?${searchParams}`);
+    return response.data;
+  },
 };

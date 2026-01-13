@@ -494,6 +494,70 @@ export class RecipeService {
   }
 
   /**
+   * Admin: Get all recipes from all users with filtering
+   */
+  async adminGetAllRecipes(
+    page: number = 1,
+    limit: number = 20,
+    userId?: string,
+    visibility?: 'public' | 'private',
+    search?: string
+  ) {
+    const skip = (page - 1) * limit;
+
+    // Build where clause
+    const where: any = {
+      deletedAt: null,
+    };
+
+    if (userId) {
+      where.userId = userId;
+    }
+
+    if (visibility) {
+      where.visibility = visibility;
+    }
+
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { tags: { has: search } },
+      ];
+    }
+
+    const [recipes, total] = await Promise.all([
+      prisma.recipe.findMany({
+        where,
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.recipe.count({ where }),
+    ]);
+
+    return {
+      recipes: recipes.map((recipe: any) => this.formatRecipeResponse(recipe)),
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNext: page * limit < total,
+        hasPrev: page > 1,
+      },
+    };
+  }
+
+  /**
    * Format recipe response to match API contract
    */
   private formatRecipeResponse(recipe: any & { user: { id: string; name?: string; email: string; } }): RecipeResponse {

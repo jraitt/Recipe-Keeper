@@ -14,6 +14,7 @@ import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { ChangePasswordPage } from './pages/ChangePasswordPage';
 import { AdminUsersPage } from './pages/AdminUsersPage';
+import { AdminRecipesPage } from './pages/AdminRecipesPage';
 import { ProfilePage } from './pages/ProfilePage';
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
             <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
             <Route path="/change-password" element={<ChangePasswordPage />} />
             <Route path="/admin/users" element={<AdminUsersPage />} />
+            <Route path="/admin/recipes" element={<AdminRecipesPage />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Routes>
         </Layout>

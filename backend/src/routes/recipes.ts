@@ -1,12 +1,15 @@
 import { Router } from 'express';
 import { recipeController } from '../controllers/recipeController';
-import { authenticateToken, checkPasswordResetRequired } from '../middleware/auth';
+import { authenticateToken, checkPasswordResetRequired, requireAdmin } from '../middleware/auth';
 
 const router = Router();
 
 // Protected routes - require authentication
 router.use(authenticateToken);
 router.use(checkPasswordResetRequired);
+
+// Admin routes
+router.get('/admin/all', requireAdmin, recipeController.adminGetAllRecipes);
 
 // Community recipes (public recipes from other users)
 router.get('/public', recipeController.getPublicRecipes);

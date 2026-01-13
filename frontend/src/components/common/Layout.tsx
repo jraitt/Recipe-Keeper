@@ -66,14 +66,24 @@ export const Layout = ({ children }: LayoutProps) => {
                     Community Recipes
                   </Link>
                   {authService.isAdmin() && (
-                    <Link
-                      to="/admin/users"
-                      className="flex items-center space-x-1 text-purple-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      aria-label="Admin users management"
-                    >
-                      <Shield className="h-4 w-4" />
-                      <span>Admin</span>
-                    </Link>
+                    <>
+                      <Link
+                        to="/admin/users"
+                        className="flex items-center space-x-1 text-purple-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        aria-label="Admin users management"
+                      >
+                        <Shield className="h-4 w-4" />
+                        <span>Users</span>
+                      </Link>
+                      <Link
+                        to="/admin/recipes"
+                        className="flex items-center space-x-1 text-purple-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        aria-label="Admin recipes management"
+                      >
+                        <Shield className="h-4 w-4" />
+                        <span>All Recipes</span>
+                      </Link>
+                    </>
                   )}
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center space-x-1 text-sm text-gray-700">
@@ -158,15 +168,26 @@ export const Layout = ({ children }: LayoutProps) => {
                   Community Recipes
                 </Link>
                 {authService.isAdmin() && (
-                  <Link
-                    to="/admin/users"
-                    onClick={closeMobileMenu}
-                    className="flex items-center space-x-2 px-3 py-2 text-purple-700 hover:text-purple-600 hover:bg-gray-50 rounded-md text-sm font-medium transition-colors duration-200"
-                    aria-label="Admin users management"
-                  >
-                    <Shield className="h-4 w-4" />
-                    <span>Admin</span>
-                  </Link>
+                  <>
+                    <Link
+                      to="/admin/users"
+                      onClick={closeMobileMenu}
+                      className="flex items-center space-x-2 px-3 py-2 text-purple-700 hover:text-purple-600 hover:bg-gray-50 rounded-md text-sm font-medium transition-colors duration-200"
+                      aria-label="Admin users management"
+                    >
+                      <Shield className="h-4 w-4" />
+                      <span>Admin: Users</span>
+                    </Link>
+                    <Link
+                      to="/admin/recipes"
+                      onClick={closeMobileMenu}
+                      className="flex items-center space-x-2 px-3 py-2 text-purple-700 hover:text-purple-600 hover:bg-gray-50 rounded-md text-sm font-medium transition-colors duration-200"
+                      aria-label="Admin recipes management"
+                    >
+                      <Shield className="h-4 w-4" />
+                      <span>Admin: All Recipes</span>
+                    </Link>
+                  </>
                 )}
                 <Link
                   to="/profile"

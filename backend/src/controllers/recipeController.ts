@@ -355,6 +355,33 @@ export class RecipeController {
       });
     }
   }
+
+  /**
+   * Admin: Get all recipes from all users
+   * GET /api/admin/recipes
+   */
+  async adminGetAllRecipes(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
+      const userId = req.query.userId as string | undefined;
+      const visibility = req.query.visibility as 'public' | 'private' | undefined;
+      const search = req.query.search as string | undefined;
+
+      const result = await recipeService.adminGetAllRecipes(page, limit, userId, visibility, search);
+
+      res.json({
+        success: true,
+        data: result,
+      });
+    } catch (error: any) {
+      console.error('Error fetching all recipes (admin):', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch recipes',
+      });
+    }
+  }
 }
 
 export const recipeController = new RecipeController();
